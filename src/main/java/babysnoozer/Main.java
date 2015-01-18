@@ -59,7 +59,7 @@ public class Main implements Closeable {
 	//TODO automatische Erkennung
 
 	ipcon = new IPConnection();
-	servo = new BrickServo("6xhbGJ", ipcon);
+	servo = new BrickServo("62Bpyf", ipcon);
 	display4x7 = new BrickletSegmentDisplay4x7("pPJ", ipcon);
 
 	initRoti();
