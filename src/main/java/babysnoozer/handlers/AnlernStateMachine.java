@@ -6,6 +6,7 @@ import babysnoozer.events.DisplayEvent;
 import babysnoozer.events.RotiCountEvent;
 import babysnoozer.events.RotiPressEvent;
 import babysnoozer.events.SetServoPosEvent;
+import babysnoozer.tinkerforge.TinkerforgeSystem;
 
 /**
  * Created by Alexander Bischof on 10.01.15.
@@ -50,9 +51,9 @@ public class AnlernStateMachine {
 			  //Statuswechsel
 			  AnlernStateMachine.this.state = AnlernStateMachine.State.StartPos;
 			  //TODO weil auch zwischendrin gedreht werden kann
-			  roti.getCount(/*reset*/ true);
+			  TinkerforgeSystem.instance().getRoti().getCount(/*reset*/ true);
 
-			} catch (InterruptedException e) {
+			} catch (Exception e) {
 			  e.printStackTrace();
 			}
 		  }
