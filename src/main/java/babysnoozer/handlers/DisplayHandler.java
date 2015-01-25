@@ -32,7 +32,10 @@ public class DisplayHandler implements EventHandler {
 	//TODO Scrolling
 	String text = displayEvent.getText();
     EventBus.instance().fire(new LogEvent("Displaying Text: " + text));
+    displayText(text);
+  }
 
+  private void displayText(String text) {
 	short[] segments = {
 			character(text.charAt(0)),
 			character(text.charAt(1)),

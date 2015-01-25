@@ -1,12 +1,13 @@
 package babysnoozer;
 
+import babysnoozer.handlers.SnoozingBabyConfig;
+import babysnoozer.tinkerforge.TinkerforgeSystem;
 import com.tinkerforge.*;
 import babysnoozer.events.CloseEvent;
 import babysnoozer.events.DisplayEvent;
 import babysnoozer.events.LogEvent;
 import babysnoozer.handlers.DisplayHandler;
 import babysnoozer.handlers.LogHandler;
-import babysnoozer.listeners.RotiListener;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -16,28 +17,26 @@ import java.io.IOException;
  */
 public class Main implements Closeable {
 
-  private IPConnection ipcon;
-  private BrickServo servo;
-  private BrickletSegmentDisplay4x7 display4x7;
-  private BrickletRotaryEncoder roti;
+  //TODO refac to conf file
+  public static final long SHOW_SNOOZING_BABY_IN_MS = 3000l;
 
   public static void main(String[] args) throws IOException, AlreadyConnectedException, InterruptedException {
 
 	try (Main main = new Main()) {
 
 	  //InitBricks
-	  main.initBricks();
+	  TinkerforgeSystem.instance().initBricks();
 
 	  //Register Handlers
-	  main.registerHandlers();
+	  TinkerforgeSystem.instance().registerHandlers();
 
 	  //Show 3s Snoozing Baby
 	  EventBus.instance().fire(new DisplayEvent("Snoozing Baby"));
+	  Thread.sleep(SHOW_SNOOZING_BABY_IN_MS);
 
-	  Thread.sleep(3000l);
-
-	  //Show Defaulttime
-	  EventBus.instance().fire(new DisplayEvent("   3"));
+	  //Show Defaulttime (configurable with roti)
+	  int runtimeInMinutes = SnoozingBabyConfig.instance().getRuntimeInMinutes();
+	  EventBus.instance().fire(new DisplayEvent(String.format("%04d", runtimeInMinutes)));
 
 	  //TODO Zeit Bis dauern
 	  System.out.println("Press key to exit");
@@ -45,44 +44,13 @@ public class Main implements Closeable {
 	}
   }
 
-  private void registerHandlers() {
-
-	//TODO repitiv
-
-	EventBus.instance().registerHandler(new LogHandler());
-	EventBus.instance().registerHandler(new DisplayHandler(display4x7));
-  }
-
-  private void initBricks() throws AlreadyConnectedException, IOException {
-	EventBus.instance().fire(new LogEvent("Initbricks"));
-
-	//TODO automatische Erkennung
-
-	ipcon = new IPConnection();
-	servo = new BrickServo("6xhbGJ", ipcon);
-	display4x7 = new BrickletSegmentDisplay4x7("pPJ", ipcon);
-
-	initRoti();
-
-	ipcon.connect("localhost", 4223);
-
-  }
-
-  private void initRoti() {
-	roti = new BrickletRotaryEncoder("kGs", ipcon);
-
-	RotiListener rotiListener = new RotiListener();
-	roti.addPressedListener(rotiListener);
-	roti.addReleasedListener(rotiListener);
-  }
-
   @Override public void close() throws IOException {
 	EventBus.instance().fire(new CloseEvent());
 
-    EventBus.instance().fire(new LogEvent("ClosingEvent by console"));
+	EventBus.instance().fire(new LogEvent("ClosingEvent by console"));
 
 	try {
-	  ipcon.disconnect();
+	  TinkerforgeSystem.instance().getIpconnection().disconnect();
 	} catch (NotConnectedException e) {
 	  e.printStackTrace();
 	}

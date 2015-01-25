@@ -13,6 +13,7 @@ public class AnlernHandler implements EventHandler {
 
   @Override public void handle(Event event) {
 
+    //TODO wie kommt man in den Initzustand
     if (event.getClass().equals(RotiPressEvent.class)) {
 
       RotiPressEvent rotiPressEvent = (RotiPressEvent) event;
