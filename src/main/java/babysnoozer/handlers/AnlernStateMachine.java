@@ -50,7 +50,8 @@ public class AnlernStateMachine {
 
 			  //Statuswechsel
 			  AnlernStateMachine.this.state = AnlernStateMachine.State.StartPos;
-			  //TODO weil auch zwischendrin gedreht werden kann
+
+			   //TODO weil auch zwischendrin gedreht werden kann
 			  TinkerforgeSystem.instance().getRoti().getCount(/*reset*/ true);
 
 			} catch (Exception e) {

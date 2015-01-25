@@ -2,8 +2,6 @@ package babysnoozer;
 
 import babysnoozer.events.CloseEvent;
 import babysnoozer.events.DisplayEvent;
-import babysnoozer.events.LogEvent;
-import babysnoozer.handlers.SnoozingBabyConfig;
 import babysnoozer.tinkerforge.TinkerforgeSystem;
 import com.tinkerforge.NotConnectedException;
 
@@ -32,12 +30,6 @@ public class Main implements Closeable {
 	  EventBus.instance().fire(new DisplayEvent("Snoozing Baby"));
 	  Thread.sleep(SHOW_SNOOZING_BABY_IN_MS);
 
-	  //Show Defaulttime (configurable with roti)
-	  //REFAC
-	 // int runtimeInMinutes = SnoozingBabyConfig.instance().getRuntimeInMinutes();
-	  //EventBus.instance().fire(new DisplayEvent(String.format("%04d", runtimeInMinutes)));
-
-	  //TODO Zeit Bis dauern
 	  System.out.println("Press key to exit");
 	  System.in.read();
 	}

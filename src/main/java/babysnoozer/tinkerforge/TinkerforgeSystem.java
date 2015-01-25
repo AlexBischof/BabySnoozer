@@ -1,7 +1,7 @@
 package babysnoozer.tinkerforge;
 
 import babysnoozer.EventBus;
-import babysnoozer.events.DisplayEvent;
+import babysnoozer.config.PropertiesLoader;
 import babysnoozer.events.LogEvent;
 import babysnoozer.events.RotiCountEvent;
 import babysnoozer.handlers.AnlernHandler;
@@ -11,6 +11,9 @@ import babysnoozer.handlers.SnoozingBabyConfig;
 import babysnoozer.listeners.RotiListener;
 import com.tinkerforge.*;
 
+import java.io.IOException;
+import java.util.Properties;
+
 /**
  * Created by Alexander Bischof on 12.01.15.
  */
@@ -18,12 +21,21 @@ public class TinkerforgeSystem {
 
   private static final TinkerforgeSystem singleton = new TinkerforgeSystem();
 
+  private Properties servoConfigProperties;
+
   private IPConnection ipconnection;
   private BrickServo servo;
   private BrickletSegmentDisplay4x7 display4x7;
   private BrickletRotaryEncoder roti;
 
   private TinkerforgeSystem() {
+
+	try {
+	  servoConfigProperties = new PropertiesLoader("servo.properties").load();
+	} catch (IOException e) {
+	  e.printStackTrace();
+	}
+
   }
 
   public static TinkerforgeSystem instance() {
@@ -57,12 +69,11 @@ public class TinkerforgeSystem {
   private void initRoti() throws TimeoutException, NotConnectedException {
 	roti = new BrickletRotaryEncoder("kGs", ipconnection);
 
-    roti.setCountCallbackPeriod(100l);
+	roti.setCountCallbackPeriod(100l);
 
 	RotiListener rotiListener = new RotiListener();
 	roti.addPressedListener(rotiListener);
 	roti.addReleasedListener(rotiListener);
-
 
 	roti.addCountListener(new BrickletRotaryEncoder.CountListener() {
 	  @Override public void count(int count) {
@@ -77,19 +88,17 @@ public class TinkerforgeSystem {
   private void configServo(BrickServo servo) throws TimeoutException, NotConnectedException,
 		  InterruptedException {
 
-	//TODO
-	//assert false : "Muss Connectetd sein";
+	//TODO Auslagerung properties
 
-    //TODO Auslagerung properties
+	servo.setOutputVoltage(Integer.valueOf(servoConfigProperties.getProperty("outputVoltage", "7200")));
 
-	servo.setOutputVoltage(7200);
-
-	servo.setDegree((short) 0, (short) -900, (short) 900);
-	servo.setPulseWidth((short) 0, 960, 2040);
-	servo.setPeriod((short) 0, 19500);
-	servo.setAcceleration((short) 0, 2000);
-	servo.setVelocity((short) 0, 200);
-
+	servo.setDegree((short) 0, Short.valueOf(servoConfigProperties.getProperty("degreeStart", "-900")),
+	                Short.valueOf(servoConfigProperties.getProperty("degreeEnd", "900")));
+	servo.setPulseWidth((short) 0, Short.valueOf(servoConfigProperties.getProperty("pulseWidthStart", "960")),
+	                    Short.valueOf(servoConfigProperties.getProperty("pulseWidthEnd", "2040")));
+	servo.setPeriod((short) 0, Integer.valueOf(servoConfigProperties.getProperty("period", "19500")));
+	servo.setAcceleration((short) 0, Integer.valueOf(servoConfigProperties.getProperty("acceleration", "2000")));
+	servo.setVelocity((short) 0, Integer.valueOf(servoConfigProperties.getProperty("velocity", "200")));
   }
 
   public IPConnection getIpconnection() {

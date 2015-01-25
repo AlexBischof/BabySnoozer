@@ -14,18 +14,17 @@ public class AnlernHandler implements EventHandler {
 
   @Override public void handle(Event event) {
 
-	//TODO wie kommt man in den Initzustand
 	Class<? extends Event> aClass = event.getClass();
 	if (aClass.equals(RotiPressEvent.class)) {
 
 	  RotiPressEvent rotiPressEvent = (RotiPressEvent) event;
-
-	  //Analyze Event for Mapping to states
 	  machine.next(rotiPressEvent);
+
 	} else if (aClass.equals(RotiCountEvent.class)) {
-	  System.out.println("......" + event);
-	 // RotiCountEvent rotiCountEvent = (RotiCountEvent) event;
-	 // rotiCountEvent.getCount();
+
+	  RotiPressEvent rotiPressEvent = (RotiPressEvent) event;
+	  machine.next(rotiPressEvent);
+
 	}
   }
 }

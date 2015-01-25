@@ -35,9 +35,9 @@ public class test {
 	                                   //display4x7
 
 	                                   if (position == ANSCHLAG_AUSZUG) {
-		                                 //Switch config for einzug
+		                                 //Switch babysnoozing.config for einzug
 	                                   } else if (position == ANSCHLAG_EINZUG) {
-		                                 //Switch config for auszug
+		                                 //Switch babysnoozing.config for auszug
 	                                   }
 	                                 }
 	);
