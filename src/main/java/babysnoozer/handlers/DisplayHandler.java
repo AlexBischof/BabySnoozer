@@ -31,7 +31,6 @@ public class DisplayHandler implements EventHandler {
 
 	//TODO Scrolling
 	String text = displayEvent.getText();
-    EventBus.instance().fire(new LogEvent("Displaying Text: " + text));
     displayText(text);
   }
 

@@ -23,7 +23,7 @@ public class CruzyfixBunny implements Closeable {
   public CruzyfixBunny()
 		  throws AlreadyConnectedException, IOException, NotConnectedException, InterruptedException, TimeoutException {
 	ipcon = new IPConnection();
-	servo = new BrickServo("6xhbGJ", ipcon);
+	servo = new BrickServo("62Bpyf", ipcon);
 	display4x7 = new BrickletSegmentDisplay4x7("pPJ", ipcon);
 	roti = new BrickletRotaryEncoder("kGs", ipcon);
 

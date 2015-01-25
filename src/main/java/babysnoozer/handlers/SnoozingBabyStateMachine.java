@@ -1,7 +1,6 @@
 package babysnoozer.handlers;
 
 import babysnoozer.EventBus;
-import babysnoozer.events.LogEvent;
 import babysnoozer.events.SnoozingStartEvent;
 
 /**
@@ -29,8 +28,6 @@ public class SnoozingBabyStateMachine {
 	  //TODO howTo start?
 	  state = State.Running;
 	  EventBus.instance().fire(new SnoozingStartEvent());
-	} else {
-	  EventBus.instance().fire(new LogEvent("System not angelernt"));
 	}
   }
 }

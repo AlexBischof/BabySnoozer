@@ -1,13 +1,11 @@
 package babysnoozer;
 
-import babysnoozer.handlers.SnoozingBabyConfig;
-import babysnoozer.tinkerforge.TinkerforgeSystem;
-import com.tinkerforge.*;
 import babysnoozer.events.CloseEvent;
 import babysnoozer.events.DisplayEvent;
 import babysnoozer.events.LogEvent;
-import babysnoozer.handlers.DisplayHandler;
-import babysnoozer.handlers.LogHandler;
+import babysnoozer.handlers.SnoozingBabyConfig;
+import babysnoozer.tinkerforge.TinkerforgeSystem;
+import com.tinkerforge.NotConnectedException;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -20,7 +18,7 @@ public class Main implements Closeable {
   //TODO refac to conf file
   public static final long SHOW_SNOOZING_BABY_IN_MS = 3000l;
 
-  public static void main(String[] args) throws IOException, AlreadyConnectedException, InterruptedException {
+  public static void main(String[] args) throws Exception {
 
 	try (Main main = new Main()) {
 
@@ -35,8 +33,9 @@ public class Main implements Closeable {
 	  Thread.sleep(SHOW_SNOOZING_BABY_IN_MS);
 
 	  //Show Defaulttime (configurable with roti)
-	  int runtimeInMinutes = SnoozingBabyConfig.instance().getRuntimeInMinutes();
-	  EventBus.instance().fire(new DisplayEvent(String.format("%04d", runtimeInMinutes)));
+	  //REFAC
+	 // int runtimeInMinutes = SnoozingBabyConfig.instance().getRuntimeInMinutes();
+	  //EventBus.instance().fire(new DisplayEvent(String.format("%04d", runtimeInMinutes)));
 
 	  //TODO Zeit Bis dauern
 	  System.out.println("Press key to exit");
@@ -46,8 +45,6 @@ public class Main implements Closeable {
 
   @Override public void close() throws IOException {
 	EventBus.instance().fire(new CloseEvent());
-
-	EventBus.instance().fire(new LogEvent("ClosingEvent by console"));
 
 	try {
 	  TinkerforgeSystem.instance().getIpconnection().disconnect();
