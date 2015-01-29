@@ -9,6 +9,7 @@ import babysnoozer.handlers.DisplayHandler;
 import babysnoozer.handlers.LogHandler;
 import babysnoozer.handlers.SnoozingBabyConfig;
 import babysnoozer.listeners.RotiListener;
+import babysnoozer.listeners.ServoListener;
 import com.tinkerforge.*;
 
 import java.io.IOException;
@@ -88,8 +89,7 @@ public class TinkerforgeSystem {
   private void configServo(BrickServo servo) throws TimeoutException, NotConnectedException,
 		  InterruptedException {
 
-	//TODO Auslagerung properties
-
+    //Sets start properties
 	servo.setOutputVoltage(Integer.valueOf(servoConfigProperties.getProperty("outputVoltage", "7200")));
 
 	servo.setDegree((short) 0, Short.valueOf(servoConfigProperties.getProperty("degreeStart", "-900")),
@@ -99,6 +99,11 @@ public class TinkerforgeSystem {
 	servo.setPeriod((short) 0, Integer.valueOf(servoConfigProperties.getProperty("period", "19500")));
 	servo.setAcceleration((short) 0, Integer.valueOf(servoConfigProperties.getProperty("acceleration", "2000")));
 	servo.setVelocity((short) 0, Integer.valueOf(servoConfigProperties.getProperty("velocity", "200")));
+
+    //Sets servolistener
+    ServoListener servoListener = new ServoListener();
+    servo.addUnderVoltageListener(servoListener);
+    servo.addPositionReachedListener(servoListener);
   }
 
   public IPConnection getIpconnection() {

@@ -6,9 +6,9 @@ import babysnoozer.Event;
  * Created by Alexander Bischof on 25.01.15.
  */
 public class SetServoPosEvent implements Event {
-  private final int pos;
+  private final short pos;
 
-  public SetServoPosEvent(int pos) {
+  public SetServoPosEvent(short pos) {
 	this.pos = pos;
   }
 
