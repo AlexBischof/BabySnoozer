@@ -1,6 +1,6 @@
 package babysnoozer;
 
-import babysnoozer.events.CloseEvent;
+import babysnoozer.events.ShutdownEvent;
 import babysnoozer.events.DisplayEvent;
 import babysnoozer.tinkerforge.TinkerforgeSystem;
 import com.tinkerforge.NotConnectedException;
@@ -36,7 +36,7 @@ public class Main implements Closeable {
   }
 
   @Override public void close() throws IOException {
-	EventBus.instance().fire(new CloseEvent());
+	EventBus.instance().fire(new ShutdownEvent());
 
 	try {
 	  TinkerforgeSystem.instance().getIpconnection().disconnect();
