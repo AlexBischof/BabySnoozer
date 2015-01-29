@@ -2,7 +2,7 @@ package babysnoozer.handlers;
 
 import babysnoozer.Event;
 import babysnoozer.EventBus;
-import babysnoozer.events.DisplayEvent;
+import babysnoozer.events.DisplayTextEvent;
 import babysnoozer.events.RotiCountEvent;
 import babysnoozer.events.RotiPressEvent;
 import babysnoozer.events.SetServoPosEvent;
@@ -39,14 +39,14 @@ public class AnlernStateMachine {
 		//TODO BADBADBAD REFAC
 		this.state = State.Init;
 
-		EventBus.instance().fire(new DisplayEvent("Learn"));
+		EventBus.instance().fire(new DisplayTextEvent("Learn"));
 
 		//Nach 2 Sekunden Anzeige
 		new Thread() {
 		  @Override public void run() {
 			try {
 			  Thread.sleep(2000l);
-			  EventBus.instance().fire(new DisplayEvent("SetS"));
+			  EventBus.instance().fire(new DisplayTextEvent("SetS"));
 
 			  //Statuswechsel
 			  AnlernStateMachine.this.state = AnlernStateMachine.State.StartPos;

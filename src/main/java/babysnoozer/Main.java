@@ -1,7 +1,7 @@
 package babysnoozer;
 
+import babysnoozer.events.DisplayTextEvent;
 import babysnoozer.events.ShutdownEvent;
-import babysnoozer.events.DisplayEvent;
 import babysnoozer.tinkerforge.TinkerforgeSystem;
 import com.tinkerforge.NotConnectedException;
 
@@ -27,7 +27,7 @@ public class Main implements Closeable {
 	  TinkerforgeSystem.instance().registerHandlers();
 
 	  //Show 3s Snoozing Baby
-	  EventBus.instance().fire(new DisplayEvent("Snoozing Baby"));
+	  EventBus.instance().fire(new DisplayTextEvent("Snoozing Baby"));
 	  Thread.sleep(SHOW_SNOOZING_BABY_IN_MS);
 
 	  System.out.println("Press key to exit");
