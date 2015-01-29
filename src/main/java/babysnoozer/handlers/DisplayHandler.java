@@ -1,5 +1,6 @@
 package babysnoozer.handlers;
 
+import babysnoozer.events.AkkuEmptyEvent;
 import com.tinkerforge.BrickletSegmentDisplay4x7;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
@@ -16,22 +17,19 @@ public class DisplayHandler implements EventHandler {
   private final BrickletSegmentDisplay4x7 display;
 
   public DisplayHandler(BrickletSegmentDisplay4x7 display4x7) {
-    this.display = display4x7;
+	this.display = display4x7;
   }
 
   @Override public void handle(Event event) {
 
-	if (event.getClass().equals(DisplayEvent.class)) {
-	  displayText((DisplayEvent) event);
+	Class<? extends Event> eventClass = event.getClass();
+	if (eventClass.equals(DisplayEvent.class)) {
+	  //Sets display to text
+	  DisplayEvent displayEvent = (DisplayEvent) event;
+	  displayText(displayEvent.getText());
+	} else if (eventClass.equals(AkkuEmptyEvent.class)) {
+	  displayText("Akku");
 	}
-  }
-
-  private void displayText(DisplayEvent event) {
-	DisplayEvent displayEvent = (DisplayEvent) event;
-
-	//TODO Scrolling
-	String text = displayEvent.getText();
-    displayText(text);
   }
 
   private void displayText(String text) {
@@ -42,11 +40,11 @@ public class DisplayHandler implements EventHandler {
 			character(text.charAt(3))
 	};
 	try {
-		display.setSegments(segments, (short) 5, false);
+	  display.setSegments(segments, (short) 5, false);
 	} catch (TimeoutException e) {
-		e.printStackTrace();
+	  e.printStackTrace();
 	} catch (NotConnectedException e) {
-		e.printStackTrace();
+	  e.printStackTrace();
 	}
   }
 
