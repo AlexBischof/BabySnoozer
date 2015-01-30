@@ -1,10 +1,9 @@
 package babysnoozer.tinkerforge;
 
-import babysnoozer.EventBus;
 import babysnoozer.config.PropertiesLoader;
 import babysnoozer.events.LogEvent;
 import babysnoozer.events.RotiCountEvent;
-import babysnoozer.handlers.*;
+import babysnoozer.handlers.SnoozingBabyConfig;
 import babysnoozer.listeners.RotiListener;
 import babysnoozer.listeners.ServoListener;
 import com.tinkerforge.*;
@@ -12,12 +11,14 @@ import com.tinkerforge.*;
 import java.io.IOException;
 import java.util.Properties;
 
+import static babysnoozer.EventBus.EventBus;
+
 /**
  * Created by Alexander Bischof on 12.01.15.
  */
-public class TinkerforgeSystem {
+public enum TinkerforgeSystem {
 
-  private static final TinkerforgeSystem singleton = new TinkerforgeSystem();
+  TinkerforgeSystem;
 
   private Properties servoConfigProperties;
 
@@ -36,12 +37,8 @@ public class TinkerforgeSystem {
 
   }
 
-  public static TinkerforgeSystem instance() {
-	return singleton;
-  }
-
   public void initBricks() throws Exception {
-	EventBus.instance().fire(new LogEvent("Initbricks"));
+	EventBus.post(new LogEvent("Initbricks"));
 
 	//TODO automatische Erkennung
 
@@ -54,17 +51,6 @@ public class TinkerforgeSystem {
 	initRoti();
 
 	configServo(servo);
-  }
-
-  public void registerHandlers() {
-
-	//TODO repitiv
-	EventBus.instance().registerHandler(new LogHandler());
-	EventBus.instance().registerHandler(new DisplayHandler(TinkerforgeSystem.instance().getDisplay4x7()));
-	EventBus.instance().registerHandler(new AnlernHandler());
-	EventBus.instance().registerHandler(new ServoHandler());
-	EventBus.instance().registerHandler(new SnoozingBabyHandler());
-	EventBus.instance().registerHandler(new SnoozeCycleStateHandler());
   }
 
   private void initRoti() throws TimeoutException, NotConnectedException {
@@ -80,7 +66,7 @@ public class TinkerforgeSystem {
 	  @Override public void count(int count) {
 		//TODO Mapping von Drehstellung auf Display??
 
-		EventBus.instance().fire(new RotiCountEvent(count));
+		EventBus.post(new RotiCountEvent(count));
 		SnoozingBabyConfig.instance().setRuntimeInMinutes(count);
 	  }
 	});
@@ -89,7 +75,7 @@ public class TinkerforgeSystem {
   private void configServo(BrickServo servo) throws TimeoutException, NotConnectedException,
 		  InterruptedException {
 
-    //Sets next properties
+	//Sets next properties
 	servo.setOutputVoltage(Integer.valueOf(servoConfigProperties.getProperty("outputVoltage", "7200")));
 
 	servo.setDegree((short) 0, Short.valueOf(servoConfigProperties.getProperty("degreeStart", "-900")),
@@ -100,11 +86,11 @@ public class TinkerforgeSystem {
 	servo.setAcceleration((short) 0, Integer.valueOf(servoConfigProperties.getProperty("acceleration", "2000")));
 	servo.setVelocity((short) 0, Integer.valueOf(servoConfigProperties.getProperty("snooze_velocity", "200")));
 
-    //Sets servolistener
-    ServoListener servoListener = new ServoListener();
-    servo.addUnderVoltageListener(servoListener);
-    servo.enablePositionReachedCallback();
-    servo.addPositionReachedListener(servoListener);
+	//Sets servolistener
+	ServoListener servoListener = new ServoListener();
+	servo.addUnderVoltageListener(servoListener);
+	servo.enablePositionReachedCallback();
+	servo.addPositionReachedListener(servoListener);
   }
 
   public IPConnection getIpconnection() {

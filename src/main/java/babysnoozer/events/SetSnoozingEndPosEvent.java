@@ -1,11 +1,9 @@
 package babysnoozer.events;
 
-import babysnoozer.Event;
-
 /**
  * Created by Alexander Bischof on 12.01.15.
  */
-public class SetSnoozingEndPosEvent implements Event {
+public class SetSnoozingEndPosEvent {
   private final short endPos;
 
   public SetSnoozingEndPosEvent(short endPos) {

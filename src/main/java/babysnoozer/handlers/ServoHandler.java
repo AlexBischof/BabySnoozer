@@ -1,45 +1,37 @@
 package babysnoozer.handlers;
 
-import babysnoozer.Event;
-import babysnoozer.EventHandler;
 import babysnoozer.events.SetServoPosEvent;
 import babysnoozer.events.ShutdownEvent;
-import babysnoozer.tinkerforge.TinkerforgeSystem;
+import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
 import com.tinkerforge.BrickServo;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
+import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
+
 /**
  * Created by Alexander Bischof on 25.01.15.
  */
-public class ServoHandler implements EventHandler {
+public class ServoHandler {
 
+  //TODO refac servo
   private final static short SERVO_NUMBER = 0;
 
-  @Override public void handle(Event event) {
-
-	BrickServo servo = TinkerforgeSystem.instance().getServo();
-
-	Class<? extends Event> eventClass = event.getClass();
-
-	try {
-	  if (eventClass.equals(SetServoPosEvent.class)) {
-		handleSetServoPosEvent((SetServoPosEvent) event, servo);
-	  } else if (eventClass.equals(ShutdownEvent.class)) {
-		handleShutdownEvent(servo);
-	  }
-	} catch (Exception e) {e.printStackTrace();}
-
-  }
-
-  private void handleShutdownEvent(BrickServo servo) throws TimeoutException, NotConnectedException {
+  //TODO Shutdowns nicht asynchron
+  @Subscribe
+  public void handleShutdownEvent(ShutdownEvent shutdownEvent) throws TimeoutException, NotConnectedException {
+	BrickServo servo = TinkerforgeSystem.getServo();
 	short position = servo.getPosition(SERVO_NUMBER);
-	handleSetServoPosEvent(new SetServoPosEvent(position), servo);
+	handleSetServoPosEvent(new SetServoPosEvent(position));
   }
 
-  private void handleSetServoPosEvent(SetServoPosEvent event, BrickServo servo)
+  @Subscribe
+  @AllowConcurrentEvents
+  public void handleSetServoPosEvent(SetServoPosEvent setServoPosEvent)
 		  throws TimeoutException, NotConnectedException {
-	SetServoPosEvent setServoPosEvent = (SetServoPosEvent) event;
+
+	BrickServo servo = TinkerforgeSystem.getServo();
 	servo.setPosition(SERVO_NUMBER, (short) setServoPosEvent.getPos());
 	servo.enable(SERVO_NUMBER);
   }

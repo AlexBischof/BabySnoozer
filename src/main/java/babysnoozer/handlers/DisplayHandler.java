@@ -1,11 +1,11 @@
 package babysnoozer.handlers;
 
-import babysnoozer.Event;
-import babysnoozer.EventHandler;
 import babysnoozer.events.AkkuEmptyEvent;
 import babysnoozer.events.DisplayBrightnessEvent;
 import babysnoozer.events.DisplayTextEvent;
 import com.google.common.base.Strings;
+import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
 import com.tinkerforge.BrickletSegmentDisplay4x7;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
@@ -15,9 +15,7 @@ import static babysnoozer.tinkerforge.SiekooAlphabet.character;
 /**
  * Created by Alexander Bischof on 10.01.15.
  */
-public class DisplayHandler implements EventHandler {
-
-  private static final int TIME_FOR_INACTIVATION_IN_MS = 5000;
+public class DisplayHandler {
 
   private final BrickletSegmentDisplay4x7 display;
 
@@ -28,29 +26,24 @@ public class DisplayHandler implements EventHandler {
 	this.display = display4x7;
   }
 
-  @Override public void handle(Event event) {
+  @Subscribe
+  @AllowConcurrentEvents
+  public void handleDisplayEvent(DisplayBrightnessEvent displayBrightnessEvent)
+		  throws TimeoutException, NotConnectedException {
+	lastBrightness = displayBrightnessEvent.getBrightness();
+	displayText(lastDisplayText);
+  }
 
-	Class<? extends Event> eventClass = event.getClass();
+  @Subscribe
+  @AllowConcurrentEvents
+  public void handleDisplayEvent(DisplayTextEvent displayTextEvent) throws TimeoutException, NotConnectedException {
+	displayText(displayTextEvent.getText());
+  }
 
-	try {
-	  if (eventClass.equals(DisplayTextEvent.class)) {
-		//Sets display to text
-		DisplayTextEvent displayTextEvent = (DisplayTextEvent) event;
-		displayText(displayTextEvent.getText());
-
-	  } else if (eventClass.equals(AkkuEmptyEvent.class)) {
-		//
-		AkkuEmptyEvent akkuEmptyEvent = (AkkuEmptyEvent) event;
-		displayText("Ak " + akkuEmptyEvent.getVoltage());
-	  } else if (eventClass.equals(DisplayBrightnessEvent.class)) {
-		//
-		DisplayBrightnessEvent displayBrightnessEvent = (DisplayBrightnessEvent) event;
-		lastBrightness = displayBrightnessEvent.getBrightness();
-		displayText(lastDisplayText);
-	  }
-	} catch (Exception e) {
-	  e.printStackTrace();
-	}
+  @Subscribe
+  @AllowConcurrentEvents
+  public void handleAkkuEmptyEvent(AkkuEmptyEvent akkuEmptyEvent) throws TimeoutException, NotConnectedException {
+	displayText("Ak " + akkuEmptyEvent.getVoltage());
   }
 
   private void displayText(String text)
@@ -60,7 +53,6 @@ public class DisplayHandler implements EventHandler {
 	text = Strings.padStart(text, 4, ' ');
 
 	short[] segments = {
-			//TODO Errorhandling for text length lower
 			character(text.charAt(0)),
 			character(text.charAt(1)),
 			character(text.charAt(2)),
@@ -72,6 +64,5 @@ public class DisplayHandler implements EventHandler {
 	   */
 	display.setSegments(segments, lastBrightness, false);
 	this.lastDisplayText = text;
-
   }
 }

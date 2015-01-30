@@ -1,44 +1,36 @@
 package babysnoozer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
+import babysnoozer.handlers.*;
+import com.google.common.eventbus.AsyncEventBus;
+
+import java.util.concurrent.Executors;
+
+import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
 
 /**
  * Created by Alexander Bischof on 10.01.15.
  */
-public class EventBus {
+public enum EventBus {
 
-  private static final EventBus singleton = new EventBus();
+  EventBus;
 
-  private Vector<EventHandler> eventHandlerList = new Vector<>();
+  private com.google.common.eventbus.EventBus eventBus;
 
   private EventBus() {
+	eventBus = new AsyncEventBus(
+			Executors.newCachedThreadPool(), new EventSubscriberExceptionHandler());
   }
 
-  public static EventBus instance() {
-	return singleton;
+  private void registerHandlers() {
+	eventBus.register(new LogHandler());
+	eventBus.register(new DisplayHandler(TinkerforgeSystem.getDisplay4x7()));
+	eventBus.register(new AnlernStateMachine());
+	eventBus.register(new ServoHandler());
+	eventBus.register(new SnoozingBabyHandler());
+	eventBus.register(new SnoozeCycleStateHandler());
   }
 
-  public void registerHandler(EventHandler handler) {
-	eventHandlerList.add(handler);
-  }
-
-  public void fire(Event event) {
-	//TODO nochmal hinsichtlich flow anschauen
-	if (event.isAsync()) {
-	  new Thread() {
-		@Override public void run() {
-		  fireAllHandlers(event);
-		}
-	  }.start();
-	} else {
-	  fireAllHandlers(event);
-	}
-  }
-
-  private void fireAllHandlers(Event event) {
-	eventHandlerList.parallelStream().forEach(e -> e.handle(event));
-
+  public void post(Object event) {
+	eventBus.post(event);
   }
 }

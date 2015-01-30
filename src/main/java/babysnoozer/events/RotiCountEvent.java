@@ -1,11 +1,9 @@
 package babysnoozer.events;
 
-import babysnoozer.Event;
-
 /**
  * Created by Alexander Bischof on 10.01.15.
  */
-public class RotiCountEvent implements Event {
+public class RotiCountEvent {
   private final int count;
 
   public RotiCountEvent(int count) {

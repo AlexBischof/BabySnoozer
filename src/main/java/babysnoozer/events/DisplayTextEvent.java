@@ -1,11 +1,9 @@
 package babysnoozer.events;
 
-import babysnoozer.Event;
-
 /**
  * Created by Alexander Bischof on 10.01.15.
  */
-public class DisplayTextEvent implements Event {
+public class DisplayTextEvent {
   private final String text;
 
   public DisplayTextEvent(String text) {
