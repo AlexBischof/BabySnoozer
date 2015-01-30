@@ -1,2 +1,10 @@
 
-- Test the device
+- SnoozeCycle-Ablauf optimieren, d.h. z.B. Wait, Draw und Release mit Parametern
+- Distanzobject mit start, end und prozentual
+- guava eventbus ablösen
+- Anlernen: Anzeige SetS 2s und dann umschalten auf Zahl
+- Shutdown:  0 anzeigen und System stoppen
+- TODO: Während des Laufs cyclesLeft umstellen
+- TODO: Notaus für exceptions und während des Laufs einmal drücken
+- Servo kapseln
+-

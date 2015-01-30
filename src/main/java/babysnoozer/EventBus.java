@@ -2,6 +2,7 @@ package babysnoozer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by Alexander Bischof on 10.01.15.
@@ -10,7 +11,7 @@ public class EventBus {
 
   private static final EventBus singleton = new EventBus();
 
-  private List<EventHandler> eventHandlerList = new ArrayList<>();
+  private Vector<EventHandler> eventHandlerList = new Vector<>();
 
   private EventBus() {
   }

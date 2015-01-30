@@ -14,17 +14,16 @@ public class AnlernHandler implements EventHandler {
 
   @Override public void handle(Event event) {
 
-	Class<? extends Event> aClass = event.getClass();
-	if (aClass.equals(RotiPressEvent.class)) {
+	  Class<? extends Event> aClass = event.getClass();
+	  if (aClass.equals(RotiPressEvent.class)) {
 
-	  RotiPressEvent rotiPressEvent = (RotiPressEvent) event;
-	  machine.next(rotiPressEvent);
+		RotiPressEvent rotiPressEvent = (RotiPressEvent) event;
+		machine.next(rotiPressEvent);
 
-	} else if (aClass.equals(RotiCountEvent.class)) {
+	  } else if (aClass.equals(RotiCountEvent.class)) {
 
-	  RotiPressEvent rotiPressEvent = (RotiPressEvent) event;
-	  machine.next(rotiPressEvent);
-
+		RotiCountEvent rotiCountEvent = (RotiCountEvent) event;
+		machine.next(rotiCountEvent);
 	}
   }
 }

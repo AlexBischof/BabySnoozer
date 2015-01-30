@@ -6,6 +6,9 @@ package babysnoozer.tinkerforge;
 public class SiekooAlphabet {
   public static short character(char c) {
 	switch (c) {
+	case '-':
+	  return 0x40;
+
 	//Zahlen
 	case '0':
 	  return 0x3f;

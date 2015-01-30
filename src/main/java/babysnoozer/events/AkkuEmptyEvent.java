@@ -7,4 +7,13 @@ import babysnoozer.Event;
  */
 public class AkkuEmptyEvent implements Event {
 
+  private final int voltage;
+
+  public AkkuEmptyEvent(int voltage) {
+	this.voltage = voltage;
+  }
+
+  public int getVoltage() {
+	return voltage;
+  }
 }

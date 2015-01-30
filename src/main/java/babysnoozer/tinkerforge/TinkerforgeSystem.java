@@ -4,10 +4,7 @@ import babysnoozer.EventBus;
 import babysnoozer.config.PropertiesLoader;
 import babysnoozer.events.LogEvent;
 import babysnoozer.events.RotiCountEvent;
-import babysnoozer.handlers.AnlernHandler;
-import babysnoozer.handlers.DisplayHandler;
-import babysnoozer.handlers.LogHandler;
-import babysnoozer.handlers.SnoozingBabyConfig;
+import babysnoozer.handlers.*;
 import babysnoozer.listeners.RotiListener;
 import babysnoozer.listeners.ServoListener;
 import com.tinkerforge.*;
@@ -65,6 +62,9 @@ public class TinkerforgeSystem {
 	EventBus.instance().registerHandler(new LogHandler());
 	EventBus.instance().registerHandler(new DisplayHandler(TinkerforgeSystem.instance().getDisplay4x7()));
 	EventBus.instance().registerHandler(new AnlernHandler());
+	EventBus.instance().registerHandler(new ServoHandler());
+	EventBus.instance().registerHandler(new SnoozingBabyHandler());
+	EventBus.instance().registerHandler(new SnoozeCycleStateHandler());
   }
 
   private void initRoti() throws TimeoutException, NotConnectedException {
@@ -89,7 +89,7 @@ public class TinkerforgeSystem {
   private void configServo(BrickServo servo) throws TimeoutException, NotConnectedException,
 		  InterruptedException {
 
-    //Sets start properties
+    //Sets next properties
 	servo.setOutputVoltage(Integer.valueOf(servoConfigProperties.getProperty("outputVoltage", "7200")));
 
 	servo.setDegree((short) 0, Short.valueOf(servoConfigProperties.getProperty("degreeStart", "-900")),
@@ -98,11 +98,12 @@ public class TinkerforgeSystem {
 	                    Short.valueOf(servoConfigProperties.getProperty("pulseWidthEnd", "2040")));
 	servo.setPeriod((short) 0, Integer.valueOf(servoConfigProperties.getProperty("period", "19500")));
 	servo.setAcceleration((short) 0, Integer.valueOf(servoConfigProperties.getProperty("acceleration", "2000")));
-	servo.setVelocity((short) 0, Integer.valueOf(servoConfigProperties.getProperty("velocity", "200")));
+	servo.setVelocity((short) 0, Integer.valueOf(servoConfigProperties.getProperty("snooze_velocity", "200")));
 
     //Sets servolistener
     ServoListener servoListener = new ServoListener();
     servo.addUnderVoltageListener(servoListener);
+    servo.enablePositionReachedCallback();
     servo.addPositionReachedListener(servoListener);
   }
 
@@ -110,6 +111,7 @@ public class TinkerforgeSystem {
 	return ipconnection;
   }
 
+  //Servo 0 Wegkapsel TODO
   public BrickServo getServo() {
 	return servo;
   }
@@ -120,5 +122,10 @@ public class TinkerforgeSystem {
 
   public BrickletRotaryEncoder getRoti() {
 	return roti;
+  }
+
+  //REFAC
+  public Properties getServoConfigProperties() {
+	return servoConfigProperties;
   }
 }
