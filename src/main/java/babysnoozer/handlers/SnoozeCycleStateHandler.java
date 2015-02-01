@@ -3,6 +3,7 @@ package babysnoozer.handlers;
 import babysnoozer.events.DisplayTextEvent;
 import babysnoozer.events.SetServoPosEvent;
 import babysnoozer.events.SnoozingStartEvent;
+import babysnoozer.tinkerforge.BrickServoWrapper;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.tinkerforge.NotConnectedException;
@@ -28,23 +29,14 @@ public class SnoozeCycleStateHandler {
 
   @Subscribe
   @AllowConcurrentEvents
-  public void handleServoPositionReachedEvent() {
+  public void handleServoPositionReachedEvent() throws TimeoutException, NotConnectedException {
 	boolean isDraw = SnoozeCycleStateMachine.getTargetState().equals(State.Draw);
 
 	//changes targetState
 	short targetPos = 0;
 	if (isDraw) {
 
-	  Short learn_velocity = Short.valueOf(TinkerforgeSystem.getServoConfigProperties()
-	                                                        .getProperty("snooze_velocity", "50"));
-	  //TODO refac exception
-	  try {
-		TinkerforgeSystem.getServo().setVelocity((short) 0, learn_velocity);
-	  } catch (TimeoutException e) {
-		e.printStackTrace();
-	  } catch (NotConnectedException e) {
-		e.printStackTrace();
-	  }
+	  TinkerforgeSystem.getServo().setVelocity(BrickServoWrapper.Velocity.Draw);
 
 	  SnoozeCycleStateMachine.setTargetState(State.Release);
 	  targetPos = SnoozingBabyStateMachine.getStartPos();

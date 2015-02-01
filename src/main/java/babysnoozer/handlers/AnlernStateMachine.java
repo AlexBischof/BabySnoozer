@@ -1,6 +1,7 @@
 package babysnoozer.handlers;
 
 import babysnoozer.events.*;
+import babysnoozer.tinkerforge.BrickServoWrapper;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.tinkerforge.NotConnectedException;
@@ -65,10 +66,10 @@ public class AnlernStateMachine {
 	if (state.equals(State.StartPos)) {
 	  this.state = State.EndPos;
 	  EventBus.post(new DisplayTextEvent("SetE"));
-	  EventBus.post(new SetSnoozingStartPosEvent(TinkerforgeSystem.getServo().getPosition((short) 0)));
+	  EventBus.post(new SetSnoozingStartPosEvent(TinkerforgeSystem.getServo().getCurrentPosition()));
 	} else if (state.equals(State.EndPos)) {
 	  EventBus.post(new DisplayTextEvent("End"));
-	  EventBus.post(new SetSnoozingEndPosEvent(TinkerforgeSystem.getServo().getPosition((short) 0)));
+	  EventBus.post(new SetSnoozingEndPosEvent(TinkerforgeSystem.getServo().getCurrentPosition()));
 	  EventBus.post(new SetServoPosEvent(SnoozingBabyStateMachine.getStartPos()));
 	  this.state = State.Null;
 
@@ -76,7 +77,8 @@ public class AnlernStateMachine {
 	}
   }
 
-  private void handleRotiPressEventForNullState(RotiPressEvent rotiPressEvent) {
+  private void handleRotiPressEventForNullState(RotiPressEvent rotiPressEvent)
+		  throws TimeoutException, NotConnectedException {
 	if (rotiPressEvent.getPressedLengthInMs() > ANLERN_TRIGGER_TIME_IN_MS) {
 
 	  //TODO BADBADBAD REFAC
@@ -86,16 +88,7 @@ public class AnlernStateMachine {
 	  EventBus.post(new DisplayTextEvent("Learn"));
 
 	  //Setzt learn velocity
-	  Short learn_velocity = Short.valueOf(TinkerforgeSystem.getServoConfigProperties()
-	                                                        .getProperty("learn_velocity", "50"));
-	  //TODO refac exception
-	  try {
-		TinkerforgeSystem.getServo().setVelocity((short) 0, learn_velocity);
-	  } catch (TimeoutException e) {
-		e.printStackTrace();
-	  } catch (NotConnectedException e) {
-		e.printStackTrace();
-	  }
+	  TinkerforgeSystem.getServo().setVelocity(BrickServoWrapper.Velocity.Learn);
 
 	  //Nach 2 Sekunden Anzeige
 	  new Thread(() -> {

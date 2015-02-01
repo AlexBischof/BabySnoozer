@@ -2,6 +2,7 @@ package babysnoozer.handlers;
 
 import babysnoozer.events.SetServoPosEvent;
 import babysnoozer.events.ShutdownEvent;
+import babysnoozer.tinkerforge.BrickServoWrapper;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.tinkerforge.BrickServo;
@@ -15,15 +16,9 @@ import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
  */
 public class ServoHandler {
 
-  //TODO refac servo
-  private final static short SERVO_NUMBER = 0;
-
-  //TODO Shutdowns nicht asynchron
   @Subscribe
   public void handleShutdownEvent(ShutdownEvent shutdownEvent) throws TimeoutException, NotConnectedException {
-	BrickServo servo = TinkerforgeSystem.getServo();
-	short position = servo.getPosition(SERVO_NUMBER);
-	handleSetServoPosEvent(new SetServoPosEvent(position));
+	handleSetServoPosEvent(new SetServoPosEvent(TinkerforgeSystem.getServo().getCurrentPosition()));
   }
 
   @Subscribe
@@ -31,8 +26,8 @@ public class ServoHandler {
   public void handleSetServoPosEvent(SetServoPosEvent setServoPosEvent)
 		  throws TimeoutException, NotConnectedException {
 
-	BrickServo servo = TinkerforgeSystem.getServo();
-	servo.setPosition(SERVO_NUMBER, (short) setServoPosEvent.getPos());
-	servo.enable(SERVO_NUMBER);
+	BrickServoWrapper servo = TinkerforgeSystem.getServo();
+    servo.setPosition((short) setServoPosEvent.getPos());
+	servo.enable();
   }
 }
