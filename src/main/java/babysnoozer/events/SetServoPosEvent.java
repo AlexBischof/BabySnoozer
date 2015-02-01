@@ -10,7 +10,7 @@ public class SetServoPosEvent {
 	this.pos = pos;
   }
 
-  public int getPos() {
+  public short getPos() {
 	return pos;
   }
 }

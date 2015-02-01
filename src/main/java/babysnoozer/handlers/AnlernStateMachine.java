@@ -18,10 +18,10 @@ import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
  */
 public class AnlernStateMachine {
 
-  public static final int ANLERN_TRIGGER_TIME_IN_MS = 1000;
+  private static final int ANLERN_TRIGGER_TIME_IN_MS = 1000;
 
   public enum State {
-	Null, Init, StartPos, EndPos;
+	Null, Init, StartPos, EndPos
   }
 
   private State state = State.Null;

@@ -5,7 +5,6 @@ import babysnoozer.events.ShutdownEvent;
 import babysnoozer.tinkerforge.BrickServoWrapper;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import com.tinkerforge.BrickServo;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
@@ -27,7 +26,7 @@ public class ServoHandler {
 		  throws TimeoutException, NotConnectedException {
 
 	BrickServoWrapper servo = TinkerforgeSystem.getServo();
-    servo.setPosition((short) setServoPosEvent.getPos());
+	servo.setPosition(setServoPosEvent.getPos());
 	servo.enable();
   }
 }

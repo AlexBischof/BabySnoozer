@@ -15,6 +15,8 @@ import java.util.Properties;
  */
 public class BrickServoWrapper {
 
+  private static final String SERVO_BRICK_UID = "62Bpyf";
+
   private Properties servoConfigProperties;
 
   public enum Velocity {
@@ -39,13 +41,11 @@ public class BrickServoWrapper {
 
   private BrickServo brickServo;
   private short servoNumber;
-  private Velocity velocity;
 
   public BrickServoWrapper(IPConnection ipconnection, short servoNumber) {
-	this.velocity = Velocity.Learn;
 	this.servoNumber = servoNumber;
 
-	this.brickServo = new BrickServo("62Bpyf", ipconnection);
+	this.brickServo = new BrickServo(SERVO_BRICK_UID, ipconnection);
 
 	try {
 	  servoConfigProperties = new PropertiesLoader("servo.properties").load();
@@ -59,8 +59,7 @@ public class BrickServoWrapper {
 			servoConfigProperties.getProperty(velocity.getPropertyString(), velocity.getDefaultValue())));
   }
 
-  public void configServo() throws TimeoutException, NotConnectedException,
-		  InterruptedException {
+  public void configServo() throws TimeoutException, NotConnectedException {
 
 	//Sets next properties
 	brickServo.setOutputVoltage(Integer.valueOf(servoConfigProperties.getProperty("outputVoltage", "7200")));
@@ -71,7 +70,7 @@ public class BrickServoWrapper {
 	                         Short.valueOf(servoConfigProperties.getProperty("pulseWidthEnd", "2040")));
 	brickServo.setPeriod(servoNumber, Integer.valueOf(servoConfigProperties.getProperty("period", "19500")));
 	brickServo.setAcceleration(servoNumber, Integer.valueOf(servoConfigProperties.getProperty("acceleration", "2000")));
-	brickServo.setVelocity(servoNumber, Integer.valueOf(servoConfigProperties.getProperty("snooze_velocity", "200")));
+	setVelocity(Velocity.Draw);
 
 	//Sets servolistener
 	ServoListener servoListener = new ServoListener();

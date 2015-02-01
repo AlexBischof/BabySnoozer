@@ -2,7 +2,6 @@ package babysnoozer.tinkerforge;
 
 import babysnoozer.events.LogEvent;
 import babysnoozer.events.RotiCountEvent;
-import babysnoozer.handlers.SnoozingBabyConfig;
 import babysnoozer.listeners.RotiListener;
 import com.tinkerforge.*;
 
@@ -45,17 +44,13 @@ public enum TinkerforgeSystem {
 	roti.addPressedListener(rotiListener);
 	roti.addReleasedListener(rotiListener);
 
-	roti.addCountListener(count -> {
-	  EventBus.post(new RotiCountEvent(count));
-	  SnoozingBabyConfig.instance().setRuntimeInMinutes(count);
-	});
+	roti.addCountListener(count -> EventBus.post(new RotiCountEvent(count)));
   }
 
   public IPConnection getIpconnection() {
 	return ipconnection;
   }
 
-  //Servo 0 Wegkapsel TODO
   public BrickServoWrapper getServo() {
 	return servoWrapper;
   }

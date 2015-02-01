@@ -7,7 +7,6 @@ public class RopeDistance {
   private short startPos;
   private short endPos;
 
-
   public short getStartPos() {
 	return startPos;
   }

@@ -16,7 +16,7 @@ import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
 public class Main implements Closeable {
 
   //TODO refac to conf file
-  public static final long SHOW_SNOOZING_BABY_IN_MS = 5000l;
+  private static final long SHOW_SNOOZING_BABY_IN_MS = 5000l;
 
   public static void main(String[] args) throws Exception {
 

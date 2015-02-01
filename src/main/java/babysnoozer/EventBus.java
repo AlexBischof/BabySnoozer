@@ -19,6 +19,8 @@ public enum EventBus {
   private EventBus() {
 	eventBus = new AsyncEventBus(
 			Executors.newCachedThreadPool(), new EventSubscriberExceptionHandler());
+
+	registerHandlers();
   }
 
   private void registerHandlers() {

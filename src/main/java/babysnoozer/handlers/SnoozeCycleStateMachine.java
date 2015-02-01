@@ -8,7 +8,7 @@ public enum SnoozeCycleStateMachine {
   SnoozeCycleStateMachine;
 
   public enum State {
-	Draw, Release;
+	Draw, Release
   }
 
   private State targetState;
