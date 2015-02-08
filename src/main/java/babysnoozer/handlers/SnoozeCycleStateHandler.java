@@ -1,6 +1,7 @@
 package babysnoozer.handlers;
 
 import babysnoozer.events.DisplayTextEvent;
+import babysnoozer.events.ServoPositionReachedEvent;
 import babysnoozer.events.SetServoPosEvent;
 import babysnoozer.events.SnoozingStartEvent;
 import babysnoozer.tinkerforge.BrickServoWrapper;
@@ -29,7 +30,7 @@ public class SnoozeCycleStateHandler {
 
   @Subscribe
   @AllowConcurrentEvents
-  public void handleServoPositionReachedEvent() throws TimeoutException, NotConnectedException {
+  public void handleServoPositionReachedEvent(ServoPositionReachedEvent positionReachedEvent) throws TimeoutException, NotConnectedException {
 	boolean isDraw = SnoozeCycleStateMachine.getTargetState().equals(State.Draw);
 
 	//changes targetState

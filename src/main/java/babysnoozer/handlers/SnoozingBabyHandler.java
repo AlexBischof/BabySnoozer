@@ -31,7 +31,7 @@ public class SnoozingBabyHandler {
 
   @Subscribe
   @AllowConcurrentEvents
-  public void handleRotiPressEvent() {
+  public void handleRotiPressEvent(RotiPressEvent rotiPressEvent) {
 	if (SnoozingBabyStateMachine.getState().equals(State.SetCycleCount)) {
 	  SnoozingBabyStateMachine.setState(State.Snooze);
 	  EventBus.post(new SnoozingStartEvent());
@@ -53,7 +53,7 @@ public class SnoozingBabyHandler {
 
   @Subscribe
   @AllowConcurrentEvents
-  public void handleInitSnoozingStateEvent() throws TimeoutException, NotConnectedException {
+  public void handleInitSnoozingStateEvent(InitSnoozingStateEvent initSnoozingStateEvent) throws TimeoutException, NotConnectedException {
 	SnoozingBabyStateMachine.setState(State.SetCycleCount);
 
 	//TODO weil auch zwischendrin gedreht werden kann
@@ -65,7 +65,7 @@ public class SnoozingBabyHandler {
 
   @Subscribe
   @AllowConcurrentEvents
-  public void handleSnoozingStartEvent() {
+  public void handleSnoozingStartEvent(SnoozingStartEvent snoozingStartEvent) {
 	EventBus.post(new DisplayBrightnessEvent(DisplayBrightnessEvent.Brightness.LOW.getValue()));
 	EventBus.post(new SetServoPosEvent(SnoozingBabyStateMachine.getEndPos()));
   }
