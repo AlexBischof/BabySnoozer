@@ -11,20 +11,15 @@ import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
 import static babysnoozer.tinkerforge.SiekooAlphabet.character;
+import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
 
 /**
  * Created by Alexander Bischof on 10.01.15.
  */
 public class DisplayHandler {
 
-  private final BrickletSegmentDisplay4x7 display;
-
   private String lastDisplayText = "";
   private short lastBrightness = DisplayBrightnessEvent.Brightness.FULL.getValue();
-
-  public DisplayHandler(BrickletSegmentDisplay4x7 display4x7) {
-	this.display = display4x7;
-  }
 
   @Subscribe
   @AllowConcurrentEvents
@@ -62,7 +57,7 @@ public class DisplayHandler {
 	  /*
 	   * Logic to diffentiate between inactive text and active text events
 	   */
-	display.setSegments(segments, lastBrightness, false);
+    TinkerforgeSystem.getDisplay4x7().setSegments(segments, lastBrightness, false);
 	this.lastDisplayText = text;
   }
 }

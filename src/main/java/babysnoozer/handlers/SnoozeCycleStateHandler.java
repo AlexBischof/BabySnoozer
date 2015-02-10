@@ -31,6 +31,10 @@ public class SnoozeCycleStateHandler {
   @Subscribe
   @AllowConcurrentEvents
   public void handleServoPositionReachedEvent(ServoPositionReachedEvent positionReachedEvent) throws TimeoutException, NotConnectedException {
+    if (SnoozeCycleStateMachine.getTargetState() == null)
+      // do only run that function is target state was already set by handleSnoozingStartEvent
+      return;
+
 	boolean isDraw = SnoozeCycleStateMachine.getTargetState().equals(State.Draw);
 
 	//changes targetState
