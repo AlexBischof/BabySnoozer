@@ -38,7 +38,7 @@ public class DisplayHandler {
   @Subscribe
   @AllowConcurrentEvents
   public void handleAkkuEmptyEvent(AkkuEmptyEvent akkuEmptyEvent) throws TimeoutException, NotConnectedException {
-	displayText("Ak " + akkuEmptyEvent.getVoltage());
+	displayText("Batt");
   }
 
   private void displayText(String text)
