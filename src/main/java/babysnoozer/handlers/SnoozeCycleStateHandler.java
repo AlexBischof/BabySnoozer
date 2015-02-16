@@ -41,7 +41,7 @@ public class SnoozeCycleStateHandler {
 	short targetPos = 0;
 	if (isDraw) {
 
-	  TinkerforgeSystem.getServo().setVelocity(BrickServoWrapper.Velocity.Draw);
+	  TinkerforgeSystem.getServo().setVelocity(BrickServoWrapper.Velocity.lvl4);
 
 	  SnoozeCycleStateMachine.setTargetState(State.Release);
 	  targetPos = SnoozingBabyStateMachine.getStartPos();

@@ -20,38 +20,67 @@ public class BrickServoWrapper {
   private Properties servoConfigProperties;
 
   public enum Velocity {
-	Learn("50", "learn_velocity"), Draw("200", "snooze_velocity"), Release("200", "snooze_velocity");
+    lvl1("50", "speed_lvl1"),
+    lvl2("100", "speed_lvl2"),
+    lvl3("200", "speed_lvl3"),
+    lvl4("1000", "speed_lvl4"),
+    max("65535", "speed_max"),
+    learn("50", "speed_learn");
 
-	private String defaultValue;
-	private String propertyString;
+    private String defaultValue;
+    private String propertyString;
 
-	Velocity(String defaultValue, String propertyString) {
-	  this.defaultValue = defaultValue;
-	  this.propertyString = propertyString;
-	}
+    Velocity(String defaultValue, String propertyString) {
+      this.defaultValue = defaultValue;
+      this.propertyString = propertyString;
+    }
 
-	public String getDefaultValue() {
-	  return defaultValue;
-	}
+    public String getDefaultValue() {
+      return defaultValue;
+    }
 
-	public String getPropertyString() {
-	  return propertyString;
-	}
+    public String getPropertyString() {
+      return propertyString;
+    }
+  }
+
+  public enum Acceleration {
+    lvl1("50", "acc_lvl1"),
+    lvl2("100", "acc_lvl2"),
+    lvl3("200", "acc_lvl3"),
+    lvl4("1000", "acc_lvl4"),
+    max("65535", "acc_max"),
+    learn("50", "acc_learn");
+
+    private String defaultValue;
+    private String propertyString;
+
+    Acceleration(String defaultValue, String propertyString) {
+      this.defaultValue = defaultValue;
+      this.propertyString = propertyString;
+    }
+    public String getDefaultValue() {
+      return defaultValue;
+    }
+
+    public String getPropertyString() {
+      return propertyString;
+    }
   }
 
   private BrickServo brickServo;
   private short servoNumber;
 
   public BrickServoWrapper(IPConnection ipconnection, short servoNumber) {
-	this.servoNumber = servoNumber;
+    this.servoNumber = servoNumber;
 
-	this.brickServo = new BrickServo(SERVO_BRICK_UID, ipconnection);
+    this.brickServo = new BrickServo(SERVO_BRICK_UID, ipconnection);
 
-	try {
-	  servoConfigProperties = new PropertiesLoader("servo.properties").load();
-	} catch (IOException e) {
-	  e.printStackTrace();
-	}
+    try {
+      servoConfigProperties = new PropertiesLoader("servo.properties").load();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   public void setVelocity(Velocity velocity) throws TimeoutException, NotConnectedException {
@@ -59,24 +88,32 @@ public class BrickServoWrapper {
 			servoConfigProperties.getProperty(velocity.getPropertyString(), velocity.getDefaultValue())));
   }
 
+  public void setAcceleration(Acceleration acceleration) throws TimeoutException, NotConnectedException {
+    this.brickServo.setAcceleration(servoNumber, Integer.valueOf(
+            servoConfigProperties.getProperty(acceleration.getPropertyString(), acceleration.getDefaultValue())));
+  }
+
   public void configServo() throws TimeoutException, NotConnectedException {
 
-	//Sets next properties
-	brickServo.setOutputVoltage(Integer.valueOf(servoConfigProperties.getProperty("outputVoltage", "7200")));
+    //Sets next properties
+    brickServo.setOutputVoltage(Integer.valueOf(servoConfigProperties.getProperty("outputVoltage", "7200")));
 
-	brickServo.setDegree(servoNumber, Short.valueOf(servoConfigProperties.getProperty("degreeStart", "-900")),
-	                     Short.valueOf(servoConfigProperties.getProperty("degreeEnd", "900")));
-	brickServo.setPulseWidth(servoNumber, Short.valueOf(servoConfigProperties.getProperty("pulseWidthStart", "960")),
-	                         Short.valueOf(servoConfigProperties.getProperty("pulseWidthEnd", "2040")));
-	brickServo.setPeriod(servoNumber, Integer.valueOf(servoConfigProperties.getProperty("period", "19500")));
-	brickServo.setAcceleration(servoNumber, Integer.valueOf(servoConfigProperties.getProperty("acceleration", "2000")));
-	setVelocity(Velocity.Draw);
+    brickServo.setDegree(servoNumber, Short.valueOf(servoConfigProperties.getProperty("degreeStart", "-900")),
+                         Short.valueOf(servoConfigProperties.getProperty("degreeEnd", "900")));
+    brickServo.setPulseWidth(servoNumber, Short.valueOf(servoConfigProperties.getProperty("pulseWidthStart", "960")),
+                             Short.valueOf(servoConfigProperties.getProperty("pulseWidthEnd", "2040")));
+    brickServo.setPeriod(servoNumber, Integer.valueOf(servoConfigProperties.getProperty("period", "19500")));
+    brickServo.setAcceleration(servoNumber, Integer.valueOf(servoConfigProperties.getProperty("acceleration", "2000")));
+    // velocity and acc should be max to set brick firmware immediately to first pos
+    // this overwrites the initial positions of 0 in brick firmware
+    setVelocity(Velocity.max);
+    setAcceleration(Acceleration.max);
 
-	//Sets servolistener
-	ServoListener servoListener = new ServoListener();
-	brickServo.addUnderVoltageListener(servoListener);
-	brickServo.enablePositionReachedCallback();
-	brickServo.addPositionReachedListener(servoListener);
+    //Sets servolistener
+    ServoListener servoListener = new ServoListener();
+    brickServo.addUnderVoltageListener(servoListener);
+    brickServo.enablePositionReachedCallback();
+    brickServo.addPositionReachedListener(servoListener);
   }
 
   public short getCurrentPosition() throws TimeoutException, NotConnectedException {
@@ -84,10 +121,10 @@ public class BrickServoWrapper {
   }
 
   public void setPosition(short position) throws TimeoutException, NotConnectedException {
-	brickServo.setPosition(this.servoNumber, position);
+      brickServo.setPosition(this.servoNumber, position);
   }
 
   public void enable() throws TimeoutException, NotConnectedException {
-	brickServo.enable(this.servoNumber);
+	  brickServo.enable(this.servoNumber);
   }
 }
