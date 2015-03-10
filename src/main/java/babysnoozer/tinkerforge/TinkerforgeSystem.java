@@ -25,7 +25,10 @@ public enum TinkerforgeSystem {
 	//TODO automatische Erkennung
 
 	ipconnection = new IPConnection();
-	servoWrapper = new BrickServoWrapper(ipconnection, (short) 0);
+
+    servoWrapper = new BrickServoWrapper(0);
+    servoWrapper.initBrick(ipconnection);
+
 	display4x7 = new BrickletSegmentDisplay4x7("pPJ", ipconnection);
 
 	ipconnection.connect("localhost", 4223);

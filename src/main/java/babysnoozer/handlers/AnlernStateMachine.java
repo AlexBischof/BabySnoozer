@@ -88,8 +88,9 @@ public class AnlernStateMachine {
 	  EventBus.post(new DisplayTextEvent("Learn"));
 
 	  //Setzt learn velocity
-	  TinkerforgeSystem.getServo().setVelocity(BrickServoWrapper.Velocity.learn);
-    TinkerforgeSystem.getServo().setAcceleration(BrickServoWrapper.Acceleration.learn);
+	  BrickServoWrapper servo = TinkerforgeSystem.getServo();
+	  servo.setVelocity(BrickServoWrapper.Velocity.learn);
+	  servo.setAcceleration(BrickServoWrapper.Acceleration.learn);
 
 	  //Nach 2 Sekunden Anzeige
 	  new Thread(() -> {
