@@ -32,7 +32,6 @@ public enum EventBus {
 	eventBus.register(new AnlernStateMachine());
 	eventBus.register(new ServoHandler());
 	eventBus.register(new SnoozingBabyHandler());
-	eventBus.register(new SnoozeCycleStateHandler());
   }
 
   public void post(Object event) {

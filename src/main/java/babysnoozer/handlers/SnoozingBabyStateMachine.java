@@ -1,5 +1,11 @@
 package babysnoozer.handlers;
 
+import babysnoozer.config.PropertiesLoader;
+import babysnoozer.handlers.commands.CycleQueue;
+
+import java.io.IOException;
+import java.util.Properties;
+
 /**
  * Created by Alexander Bischof on 12.01.15.
  */
@@ -15,6 +21,21 @@ public enum SnoozingBabyStateMachine {
 
   private RopeDistance ropeDistance;
   private int cycleCount = 1;
+  private CycleQueue cycles;
+
+  SnoozingBabyStateMachine() {
+
+	//readValues from cycleconfig.properties
+	try {
+	  Properties servoConfigProperties = new PropertiesLoader("cycleconfig.properties").load();
+
+	  setStartPos(Short.valueOf(servoConfigProperties.getProperty("startPos")));
+	  setEndPos(Short.valueOf(servoConfigProperties.getProperty("endPos")));
+	  this.cycleCount = Integer.valueOf(servoConfigProperties.getProperty("cycleCount"));
+	} catch (IOException e) {
+	  e.printStackTrace();
+	}
+  }
 
   public State getState() {
 	return state;
@@ -43,8 +64,16 @@ public enum SnoozingBabyStateMachine {
 	return ropeDistance;
   }
 
+  public CycleQueue getCycles() {
+	return cycles;
+  }
+
+  public void setCycles(CycleQueue cycles) {
+	this.cycles = cycles;
+  }
+
   public void setStartPos(short startPos) {
-    getRopeDistance().setStartPos(startPos);
+	getRopeDistance().setStartPos(startPos);
   }
 
   public short getEndPos() {
@@ -52,6 +81,6 @@ public enum SnoozingBabyStateMachine {
   }
 
   public void setEndPos(short endPos) {
-    getRopeDistance().setEndPos(endPos);
+	getRopeDistance().setEndPos(endPos);
   }
 }

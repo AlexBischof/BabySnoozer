@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static babysnoozer.handlers.SnoozingBabyStateMachine.SnoozingBabyStateMachine;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,27 +27,27 @@ public class BrickServoWrapperTest {
 
   @Test
   public void testEnable_NotInit_WillDriveLastPosition() throws Exception {
-    //Given
-    servoWrapper.setLastPosition(100);
+	//Given
+	SnoozingBabyStateMachine.setStartPos((short) 100);
 
-    //When
+	//When
 	servoWrapper.enable();
 
-    //Then
-    assertThat(servoWrapper.isDrivenLastPosition).isTrue();
-    verify(brickServo,times(2)).enable((short) 0);
+	//Then
+	assertThat(servoWrapper.isDrivenLastPosition).isTrue();
+	verify(brickServo, times(2)).enable((short) 0);
   }
 
   @Test
   public void testEnable_Init_WillNotDriveLastPosition() throws Exception {
-    //Given
-    servoWrapper.setLastPosition(100);
-    servoWrapper.isDrivenLastPosition=true;
+	//Given
+	SnoozingBabyStateMachine.setStartPos((short) 100);
+	servoWrapper.isDrivenLastPosition = true;
 
-    //When
-    servoWrapper.enable();
+	//When
+	servoWrapper.enable();
 
-    //Then
-    verify(brickServo,times(1)).enable((short) 0);
+	//Then
+	verify(brickServo, times(1)).enable((short) 0);
   }
 }

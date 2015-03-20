@@ -11,6 +11,8 @@ import java.util.Arrays;
 
 import static babysnoozer.EventBus.EventBus;
 import static babysnoozer.handlers.SnoozingBabyStateMachine.SnoozingBabyStateMachine;
+import static babysnoozer.tinkerforge.BrickServoWrapper.Acceleration;
+import static babysnoozer.tinkerforge.BrickServoWrapper.Velocity;
 import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
 
 /**
@@ -57,7 +59,7 @@ public class AnlernStateMachine {
 	  //TODO binden an properties
 	  int zaehlerwert = fireCount(count);
 
-	  EventBus.post(new SetServoPosEvent((short) zaehlerwert));
+	  EventBus.post(new SetServoPosEvent((short) zaehlerwert, Velocity.learn, Acceleration.learn));
 	}
   }
 
@@ -70,7 +72,7 @@ public class AnlernStateMachine {
 	} else if (state.equals(State.EndPos)) {
 	  EventBus.post(new DisplayTextEvent("End"));
 	  EventBus.post(new SetSnoozingEndPosEvent(TinkerforgeSystem.getServo().getCurrentPosition()));
-	  EventBus.post(new SetServoPosEvent(SnoozingBabyStateMachine.getStartPos()));
+	  EventBus.post(new SetServoPosEvent(SnoozingBabyStateMachine.getStartPos(), Velocity.learn, Acceleration.learn));
 	  this.state = State.Null;
 
 	  EventBus.post(new InitSnoozingStateEvent());
@@ -89,8 +91,8 @@ public class AnlernStateMachine {
 
 	  //Setzt learn velocity
 	  BrickServoWrapper servo = TinkerforgeSystem.getServo();
-	  servo.setVelocity(BrickServoWrapper.Velocity.learn);
-	  servo.setAcceleration(BrickServoWrapper.Acceleration.learn);
+	  servo.setVelocity(Velocity.learn);
+	  servo.setAcceleration(Acceleration.learn);
 
 	  //Nach 2 Sekunden Anzeige
 	  new Thread(() -> {

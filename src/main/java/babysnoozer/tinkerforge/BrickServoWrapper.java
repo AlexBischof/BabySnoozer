@@ -1,6 +1,7 @@
 package babysnoozer.tinkerforge;
 
 import babysnoozer.config.PropertiesLoader;
+import babysnoozer.handlers.SnoozingBabyStateMachine;
 import babysnoozer.listeners.ServoListener;
 import com.tinkerforge.BrickServo;
 import com.tinkerforge.IPConnection;
@@ -10,6 +11,8 @@ import com.tinkerforge.TimeoutException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Properties;
+
+import static babysnoozer.handlers.SnoozingBabyStateMachine.*;
 
 /**
  * Created by Alexander Bischof on 31.01.15.
@@ -78,11 +81,6 @@ public class BrickServoWrapper {
    */
   boolean isDrivenLastPosition;
 
-  /**
-   * Holds the last position of the servo.
-   */
-  private int lastPosition;
-
   public BrickServoWrapper(int servoNumber) {
 	this.servoNumber = (short) servoNumber;
   }
@@ -107,13 +105,9 @@ public class BrickServoWrapper {
 			servoConfigProperties.getProperty(acceleration.getPropertyString(), acceleration.getDefaultValue())));
   }
 
-  public void setLastPosition(int lastPosition) {
-	this.lastPosition = lastPosition;
-  }
-
   public void configServo() throws TimeoutException, NotConnectedException {
 
-	//Sets next properties
+	//Sets nextCommand properties
 	brickServo.setOutputVoltage(Integer.valueOf(servoConfigProperties.getProperty("outputVoltage", "7200")));
 
 	brickServo.setDegree(servoNumber, Short.valueOf(servoConfigProperties.getProperty("degreeStart", "-900")),
@@ -165,8 +159,8 @@ public class BrickServoWrapper {
 		  isDrivenLastPosition = true;
 		}
 
-	    //Original execute
-	    internalExecute();
+		//Original execute
+		internalExecute();
 	  } catch (TimeoutException | NotConnectedException e) {
 		throw new UndeclaredThrowableException(e);
 	  }
@@ -174,10 +168,9 @@ public class BrickServoWrapper {
 
 	private void fullSpeedLastPosition() throws TimeoutException, NotConnectedException {
 	  before();
-
-	  internalExecute();
-
+	  brickServo.enable(servoNumber);
 	  after();
+
 	}
 
 	private void after() throws TimeoutException, NotConnectedException {
@@ -196,7 +189,9 @@ public class BrickServoWrapper {
 	  currentPosition = brickServo.getCurrentPosition(servoNumber);
 
 	  //Sets lastPosition
-	  brickServo.setPosition(servoNumber, (short) lastPosition);
+	  brickServo.setPosition(servoNumber, SnoozingBabyStateMachine.getStartPos());
+	  setAcceleration(Acceleration.max);
+	  setVelocity(Velocity.max);
 	}
   }
 }

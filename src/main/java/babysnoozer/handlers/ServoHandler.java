@@ -8,6 +8,8 @@ import com.google.common.eventbus.Subscribe;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
+import static babysnoozer.tinkerforge.BrickServoWrapper.Acceleration;
+import static babysnoozer.tinkerforge.BrickServoWrapper.Velocity;
 import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
 
 /**
@@ -17,7 +19,9 @@ public class ServoHandler {
 
   @Subscribe
   public void handleShutdownEvent(ShutdownEvent shutdownEvent) throws TimeoutException, NotConnectedException {
-	handleSetServoPosEvent(new SetServoPosEvent(TinkerforgeSystem.getServo().getCurrentPosition()));
+	handleSetServoPosEvent(new SetServoPosEvent(TinkerforgeSystem.getServo().getCurrentPosition(),
+	                                            Velocity.max,
+	                                            Acceleration.max));
   }
 
   @Subscribe
@@ -27,6 +31,8 @@ public class ServoHandler {
 
 	BrickServoWrapper servo = TinkerforgeSystem.getServo();
 	servo.setPosition(setServoPosEvent.getPos());
+	servo.setAcceleration(setServoPosEvent.getAcceleration());
+	servo.setVelocity(setServoPosEvent.getVelocity());
 	servo.enable();
   }
 }
