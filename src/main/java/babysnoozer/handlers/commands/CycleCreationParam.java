@@ -9,6 +9,7 @@ import static babysnoozer.tinkerforge.BrickServoWrapper.Velocity;
 public class CycleCreationParam {
   private final int cycleCount;
   private final long releaseWait;
+  private final long drawWait;
   private final int startPos;
   private final int endPos;
   private final Velocity drawVelocity;
@@ -16,8 +17,9 @@ public class CycleCreationParam {
   private final Velocity releaseVelocity;
   private final Acceleration releaseAcceleration;
 
-  public CycleCreationParam(int cycleCount, long releaseWait, int startPos, int endPos) {
+  public CycleCreationParam(int cycleCount, long drawWait, long releaseWait, int startPos, int endPos) {
 	this.cycleCount = cycleCount;
+	this.drawWait = drawWait;
 	this.releaseWait = releaseWait;
 	this.startPos = startPos;
 	this.endPos = endPos;
@@ -28,12 +30,13 @@ public class CycleCreationParam {
 	this.releaseAcceleration = Acceleration.learn;
   }
 
-  public CycleCreationParam(int cycleCount, long releaseWait, int startPos, int endPos,
+  public CycleCreationParam(int cycleCount, long drawWait, long releaseWait, int startPos, int endPos,
                             Velocity drawVelocity, Acceleration drawAcceleration,
                             Velocity releaseVelocity,
                             Acceleration releaseAcceleration) {
 	this.cycleCount = cycleCount;
 	this.releaseWait = releaseWait;
+	this.drawWait = drawWait;
 	this.startPos = startPos;
 	this.endPos = endPos;
 	this.drawVelocity = drawVelocity;
@@ -48,6 +51,10 @@ public class CycleCreationParam {
 
   public long getReleaseWait() {
 	return releaseWait;
+  }
+
+  public long getDrawWait() {
+	return drawWait;
   }
 
   public int getStartPos() {

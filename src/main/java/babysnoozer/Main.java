@@ -1,10 +1,7 @@
 package babysnoozer;
 
 import babysnoozer.config.PropertiesLoader;
-import babysnoozer.events.DisplayTextEvent;
-import babysnoozer.events.InitSnoozingStateEvent;
-import babysnoozer.events.SetServoPosEvent;
-import babysnoozer.events.ShutdownEvent;
+import babysnoozer.events.*;
 import com.tinkerforge.NotConnectedException;
 
 import java.io.Closeable;
@@ -12,6 +9,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import static babysnoozer.EventBus.EventBus;
+import static babysnoozer.handlers.SnoozingBabyStateMachine.SnoozingBabyStateMachine;
 import static babysnoozer.tinkerforge.BrickServoWrapper.Acceleration;
 import static babysnoozer.tinkerforge.BrickServoWrapper.Velocity;
 import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
@@ -47,11 +45,24 @@ public class Main implements Closeable {
 	  Thread.sleep(SHOW_SNOOZING_BABY_IN_MS);
 
 	  /*
-	   * If cycleconfig.properties is not found jump to learning state
+	   *
 	   */
+	  try {
+		Properties servoConfigProperties = new PropertiesLoader("cycleconfig.properties", false).load();
+
+		SnoozingBabyStateMachine.setStartPos(Short.valueOf(servoConfigProperties.getProperty("startPos")));
+		SnoozingBabyStateMachine.setEndPos(Short.valueOf(servoConfigProperties.getProperty("endPos")));
+
+	    SnoozingBabyStateMachine.setCycleCount(Integer.valueOf(servoConfigProperties.getProperty("cycleCount")));
+
+	    EventBus.post(new InitSnoozingStateEvent());
+	  } catch (IOException e) {
+
+		System.out.println("cycleconfig.properties not found. Starting learning");
+		EventBus.post(new LearnEvent());
+	  }
 
 	  //Shows default cycle value
-	  EventBus.post(new InitSnoozingStateEvent());
 	  System.out.println("Ready for Snooze");
 	  System.in.read();
 	}

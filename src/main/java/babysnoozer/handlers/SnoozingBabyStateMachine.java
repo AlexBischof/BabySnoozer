@@ -1,10 +1,6 @@
 package babysnoozer.handlers;
 
-import babysnoozer.config.PropertiesLoader;
 import babysnoozer.handlers.commands.CycleQueue;
-
-import java.io.IOException;
-import java.util.Properties;
 
 /**
  * Created by Alexander Bischof on 12.01.15.
@@ -22,20 +18,6 @@ public enum SnoozingBabyStateMachine {
   private RopeDistance ropeDistance;
   private int cycleCount = 1;
   private CycleQueue cycles;
-
-  SnoozingBabyStateMachine() {
-
-	//readValues from cycleconfig.properties
-	try {
-	  Properties servoConfigProperties = new PropertiesLoader("cycleconfig.properties", false).load();
-
-	  setStartPos(Short.valueOf(servoConfigProperties.getProperty("startPos")));
-	  setEndPos(Short.valueOf(servoConfigProperties.getProperty("endPos")));
-	  this.cycleCount = Integer.valueOf(servoConfigProperties.getProperty("cycleCount"));
-	} catch (IOException e) {
-	  e.printStackTrace();
-	}
-  }
 
   public State getState() {
 	return state;

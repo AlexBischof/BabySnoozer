@@ -1,5 +1,6 @@
 package babysnoozer.handlers;
 
+import babysnoozer.config.PropertiesLoader;
 import babysnoozer.events.*;
 import babysnoozer.handlers.commands.*;
 import babysnoozer.tinkerforge.BrickServoWrapper;
@@ -9,11 +10,15 @@ import com.tinkerforge.BrickletRotaryEncoder;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
+import java.io.IOException;
 import java.util.NoSuchElementException;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static babysnoozer.EventBus.EventBus;
 import static babysnoozer.handlers.SnoozingBabyStateMachine.SnoozingBabyStateMachine;
 import static babysnoozer.handlers.SnoozingBabyStateMachine.State;
+import static babysnoozer.tinkerforge.BrickServoWrapper.*;
 import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
 
 /**
@@ -41,20 +46,30 @@ public class SnoozingBabyHandler {
 	if (SnoozingBabyStateMachine.getState().equals(State.SetCycleCount)) {
 	  SnoozingBabyStateMachine.setState(State.Snooze);
 	  EventBus.post(new SnoozingStartEvent());
+
+	  //Saves values to cycleconfig.properties
+	  Properties properties = null;
+	  try {
+
+		//TODO Filenotfoundexception
+		//Files.ex
+		PropertiesLoader propertiesLoader = new PropertiesLoader("cycleconfig.properties", false);
+		properties = propertiesLoader.load();
+		properties.setProperty("startPos", String.valueOf(SnoozingBabyStateMachine.getStartPos()));
+		properties.setProperty("endPos", String.valueOf(SnoozingBabyStateMachine.getEndPos()));
+		properties.setProperty("cycleCount", String.valueOf(SnoozingBabyStateMachine.getCycleCount()));
+
+		propertiesLoader.store(properties);
+	  } catch (IOException e) {
+		e.printStackTrace();
+	  }
 	}
   }
 
   @Subscribe
   @AllowConcurrentEvents
   public void handleRotiCountEvent(RotiCountEvent rotiCountEvent) {
-	if (SnoozingBabyStateMachine.getState().equals(State.SetCycleCount)) {
-	  int count = rotiCountEvent.getCount();
-
-	  if (count > 0 && count <= 10) {
-		SnoozingBabyStateMachine.setCycleCount(count);
-		EventBus.post(new DisplayTextEvent(String.valueOf(rotiCountEvent.getCount())));
-	  }
-	}
+	//TODO verlängerung
   }
 
   @Subscribe
@@ -81,11 +96,14 @@ public class SnoozingBabyHandler {
 	int cycleCount = SnoozingBabyStateMachine.getCycleCount();
 
 	//TODO velocities and acceleration into properties
+	Velocity releaseVelocity = Velocity.lvl3;
+	Velocity drawVelocity = Velocity.lvl4;
+
 	CycleQueue cycles = new CycleCreator()
-			.create(new CycleCreationParam(cycleCount, 1000l, SnoozingBabyStateMachine.getStartPos(),
-			                               SnoozingBabyStateMachine.getEndPos(), BrickServoWrapper.Velocity.lvl2,
-			                               BrickServoWrapper.Acceleration.lvl2, BrickServoWrapper.Velocity.lvl2,
-			                               BrickServoWrapper.Acceleration.lvl2));
+			.create(new CycleCreationParam(cycleCount, 100l, 111000l, SnoozingBabyStateMachine.getStartPos(),
+			                               SnoozingBabyStateMachine.getEndPos(), drawVelocity,
+			                               Acceleration.lvl2, releaseVelocity,
+			                               Acceleration.lvl2));
 	SnoozingBabyStateMachine.setCycles(cycles);
 
 	System.out.println(cycles);

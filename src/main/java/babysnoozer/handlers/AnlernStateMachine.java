@@ -11,6 +11,8 @@ import java.util.Arrays;
 
 import static babysnoozer.EventBus.EventBus;
 import static babysnoozer.handlers.SnoozingBabyStateMachine.SnoozingBabyStateMachine;
+import static babysnoozer.handlers.SnoozingBabyStateMachine.State.Null;
+import static babysnoozer.handlers.SnoozingBabyStateMachine.State.SetCycleCount;
 import static babysnoozer.tinkerforge.BrickServoWrapper.Acceleration;
 import static babysnoozer.tinkerforge.BrickServoWrapper.Velocity;
 import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
@@ -37,9 +39,24 @@ public class AnlernStateMachine {
 	}
 
 	if (state.equals(State.Null)) {
-	  handleRotiPressEventForNullState(rotiPressEvent);
+	  if (rotiPressEvent.getPressedLengthInMs() > ANLERN_TRIGGER_TIME_IN_MS) {
+		handleRotiPressEventForNullState();
+	  }
 	} else if (Arrays.asList(State.StartPos, State.EndPos).contains(state)) {
 	  handleRotiPressEventForStartAndEndPos();
+	}
+  }
+
+  @Subscribe
+  @AllowConcurrentEvents
+  public void handleLearnEvent(LearnEvent learnEvent) throws TimeoutException, NotConnectedException {
+
+	if (isDisabled()) {
+	  return;
+	}
+
+	if (state.equals(State.Null)) {
+	  handleRotiPressEventForNullState();
 	}
   }
 
@@ -60,6 +77,13 @@ public class AnlernStateMachine {
 	  int zaehlerwert = fireCount(count);
 
 	  EventBus.post(new SetServoPosEvent((short) zaehlerwert, Velocity.learn, Acceleration.learn));
+	} else {
+	  int count = rotiCountEvent.getCount();
+
+	  if (count > 0 && count <= 10) {
+		SnoozingBabyStateMachine.setCycleCount(count);
+		EventBus.post(new DisplayTextEvent(String.valueOf(rotiCountEvent.getCount())));
+	  }
 	}
   }
 
@@ -79,46 +103,43 @@ public class AnlernStateMachine {
 	}
   }
 
-  private void handleRotiPressEventForNullState(RotiPressEvent rotiPressEvent)
+  private void handleRotiPressEventForNullState()
 		  throws TimeoutException, NotConnectedException {
-	if (rotiPressEvent.getPressedLengthInMs() > ANLERN_TRIGGER_TIME_IN_MS) {
+	//TODO BADBADBAD REFAC
+	this.state = State.Init;
 
-	  //TODO BADBADBAD REFAC
-	  this.state = State.Init;
+	EventBus.post(new DisplayBrightnessEvent(DisplayBrightnessEvent.Brightness.FULL.getValue()));
+	EventBus.post(new DisplayTextEvent("Learn"));
 
-	  EventBus.post(new DisplayBrightnessEvent(DisplayBrightnessEvent.Brightness.FULL.getValue()));
-	  EventBus.post(new DisplayTextEvent("Learn"));
+	//Setzt learn velocity
+	BrickServoWrapper servo = TinkerforgeSystem.getServo();
+	servo.setVelocity(Velocity.learn);
+	servo.setAcceleration(Acceleration.learn);
 
-	  //Setzt learn velocity
-	  BrickServoWrapper servo = TinkerforgeSystem.getServo();
-	  servo.setVelocity(Velocity.learn);
-	  servo.setAcceleration(Acceleration.learn);
+	//Nach 2 Sekunden Anzeige
+	new Thread(() -> {
+	  try {
+		Thread.sleep(2000l);
+		EventBus.post(new DisplayTextEvent("SetS"));
 
-	  //Nach 2 Sekunden Anzeige
-	  new Thread(() -> {
-		try {
-		  Thread.sleep(2000l);
-		  EventBus.post(new DisplayTextEvent("SetS"));
+		//Statuswechsel
+		AnlernStateMachine.this.state = AnlernStateMachine.State.StartPos;
 
-		  //Statuswechsel
-		  AnlernStateMachine.this.state = AnlernStateMachine.State.StartPos;
+		Thread.sleep(1000l);
+		fireCount(TinkerforgeSystem.getRoti().getCount(false));
 
-		  Thread.sleep(1000l);
-		  fireCount(TinkerforgeSystem.getRoti().getCount(false));
+		//TODO weil auch zwischendrin gedreht werden kann
+		TinkerforgeSystem.getRoti().getCount(/*reset*/ true);
 
-		  //TODO weil auch zwischendrin gedreht werden kann
-		  TinkerforgeSystem.getRoti().getCount(/*reset*/ true);
-
-		} catch (Exception e) {
-		  e.printStackTrace();
-		}
+	  } catch (Exception e) {
+		e.printStackTrace();
 	  }
-	  ).start();
 	}
+	).start();
   }
 
   private boolean isDisabled() {
-	return !SnoozingBabyStateMachine.getState().equals(babysnoozer.handlers.SnoozingBabyStateMachine.State.Null);
+	return !Arrays.asList(SetCycleCount, Null).contains(SnoozingBabyStateMachine.getState());
   }
 
   private int fireCount(int count) {
