@@ -1,7 +1,6 @@
 package babysnoozer.tinkerforge;
 
 import babysnoozer.config.PropertiesLoader;
-import babysnoozer.handlers.SnoozingBabyStateMachine;
 import babysnoozer.listeners.ServoListener;
 import com.tinkerforge.BrickServo;
 import com.tinkerforge.IPConnection;
@@ -9,10 +8,7 @@ import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
 import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Properties;
-
-import static babysnoozer.handlers.SnoozingBabyStateMachine.*;
 
 /**
  * Created by Alexander Bischof on 31.01.15.
@@ -76,23 +72,18 @@ public class BrickServoWrapper {
   BrickServo brickServo;
   short servoNumber;
 
-  /**
-   * Indicates that the servo is driven to the last position.
-   */
-  boolean isDrivenLastPosition;
-
   public BrickServoWrapper(int servoNumber) {
 	this.servoNumber = (short) servoNumber;
-  }
-
-  public void initBrick(IPConnection ipconnection) {
-	this.brickServo = new BrickServo(SERVO_BRICK_UID, ipconnection);
 
 	try {
 	  servoConfigProperties = new PropertiesLoader("servo.properties").load();
 	} catch (IOException e) {
 	  e.printStackTrace();
 	}
+  }
+
+  public void initBrick(IPConnection ipconnection) {
+	this.brickServo = new BrickServo(SERVO_BRICK_UID, ipconnection);
   }
 
   public void setVelocity(Velocity velocity) throws TimeoutException, NotConnectedException {
@@ -137,61 +128,10 @@ public class BrickServoWrapper {
   }
 
   public void enable() throws TimeoutException, NotConnectedException {
-	new FullSpeedLastPositionExecutor() {
-	  @Override
-	  protected void internalExecute() throws TimeoutException, NotConnectedException {
-		brickServo.enable(servoNumber);
-	  }
-	}.execute();
+	brickServo.enable(this.servoNumber);
   }
 
-  abstract class FullSpeedLastPositionExecutor {
-	private int currentVelocity;
-	private int currentAcceleration;
-	private short currentPosition;
-
-	protected abstract void internalExecute() throws TimeoutException, NotConnectedException;
-
-	public void execute() {
-	  try {
-		if (!isDrivenLastPosition) {
-		  fullSpeedLastPosition();
-		  isDrivenLastPosition = true;
-		}
-
-		//Original execute
-		internalExecute();
-	  } catch (TimeoutException | NotConnectedException e) {
-		throw new UndeclaredThrowableException(e);
-	  }
-	}
-
-	private void fullSpeedLastPosition() throws TimeoutException, NotConnectedException {
-	  before();
-	  brickServo.enable(servoNumber);
-	  after();
-
-	}
-
-	private void after() throws TimeoutException, NotConnectedException {
-
-	  //reset original values
-	  brickServo.setVelocity(servoNumber, currentVelocity);
-	  brickServo.setAcceleration(servoNumber, currentAcceleration);
-	  brickServo.setPosition(servoNumber, currentPosition);
-	}
-
-	private void before() throws TimeoutException, NotConnectedException {
-
-	  //Saves Original values
-	  currentVelocity = brickServo.getCurrentVelocity(servoNumber);
-	  currentAcceleration = brickServo.getAcceleration(servoNumber);
-	  currentPosition = brickServo.getCurrentPosition(servoNumber);
-
-	  //Sets lastPosition
-	  brickServo.setPosition(servoNumber, SnoozingBabyStateMachine.getStartPos());
-	  setAcceleration(Acceleration.max);
-	  setVelocity(Velocity.max);
-	}
+  public void disable() throws TimeoutException, NotConnectedException {
+	brickServo.disable(this.servoNumber);
   }
 }

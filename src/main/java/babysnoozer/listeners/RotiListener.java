@@ -14,8 +14,6 @@ public class RotiListener implements BrickletRotaryEncoder.PressedListener, Bric
 
   @Override public void pressed() {
 	timePressed = System.currentTimeMillis();
-
-	//TODO probiere ohne ReleaseEvent den Statuswechsel hinzubekommen
   }
 
   @Override public void released() {

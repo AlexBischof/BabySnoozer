@@ -12,6 +12,7 @@ import static babysnoozer.EventBus.*;
 public class EventSubscriberExceptionHandler implements SubscriberExceptionHandler {
 
   @Override public void handleException(Throwable throwable, SubscriberExceptionContext subscriberExceptionContext) {
-	EventBus.post(new ShutdownEvent());
+    throwable.printStackTrace();
+	//EventBus.post(new ShutdownEvent());
   }
 }

@@ -17,11 +17,7 @@ public class CycleQueue extends LinkedList<Cycle> {
 	  this.removeFirst();
 
 	  cycle = this.getFirst();
-	  if (cycle != null) {
-		command = cycle.nextCommand();
-	  } else {
-		command = null;
-	  }
+	  command = cycle.nextCommand();
 	}
 
 	return command;

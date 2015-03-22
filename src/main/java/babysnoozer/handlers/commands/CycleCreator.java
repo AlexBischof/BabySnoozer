@@ -17,6 +17,9 @@ public class CycleCreator {
 	  Cycle cycle = new Cycle();
 	  cycleQueue.add(cycle);
 
+	  //Wait
+	  cycle.addCommand(new WaitCommand(cycleCreationParam.getReleaseWait()));
+
 	  //Draw command
 	  cycle.addCommand(new PositionCommand(cycleCreationParam.getEndPos(), cycleCreationParam.getDrawVelocity(),
 	                                       cycleCreationParam.getDrawAcceleration()));
@@ -27,9 +30,6 @@ public class CycleCreator {
 	  //Release
 	  cycle.addCommand(new PositionCommand(cycleCreationParam.getStartPos(), cycleCreationParam.getReleaseVelocity(),
 	                                       cycleCreationParam.getReleaseAcceleration()));
-
-	  //Wait
-	  cycle.addCommand(new WaitCommand(cycleCreationParam.getReleaseWait()));
 	}
 
 	return cycleQueue;

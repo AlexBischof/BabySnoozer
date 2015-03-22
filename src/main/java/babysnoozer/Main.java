@@ -1,5 +1,6 @@
 package babysnoozer;
 
+import babysnoozer.config.PropertiesLoader;
 import babysnoozer.events.DisplayTextEvent;
 import babysnoozer.events.InitSnoozingStateEvent;
 import babysnoozer.events.SetServoPosEvent;
@@ -8,6 +9,7 @@ import com.tinkerforge.NotConnectedException;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Properties;
 
 import static babysnoozer.EventBus.EventBus;
 import static babysnoozer.tinkerforge.BrickServoWrapper.Acceleration;
@@ -20,7 +22,7 @@ import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
 public class Main implements Closeable {
 
   //TODO refac to conf file
-  private static final long SHOW_SNOOZING_BABY_IN_MS = 5000l;
+  private static final long SHOW_SNOOZING_BABY_IN_MS = 2000l;
 
   public static void main(String[] args) throws Exception {
 
@@ -36,8 +38,17 @@ public class Main implements Closeable {
 	  // It should be set here with velocity and acc max
 	  // this overwrites the brick firmware init value of 0 immediately
 	  // (without moving)
-	 // EventBus.post(new SetServoPosEvent((short) 900, Velocity.max, Acceleration.max));
-	  //Thread.sleep(SHOW_SNOOZING_BABY_IN_MS);
+	  Properties loader = new PropertiesLoader("initialpositionrecall.properties", false).load();
+	  Short initialPositionRecall = Short.valueOf(loader.getProperty("lastPosition", "800"));
+	  System.out.println("Heading initialPostionRecall: " + initialPositionRecall);
+	  EventBus.post(new SetServoPosEvent(
+			  initialPositionRecall,
+			  Velocity.max, Acceleration.max));
+	  Thread.sleep(SHOW_SNOOZING_BABY_IN_MS);
+
+	  /*
+	   * If cycleconfig.properties is not found jump to learning state
+	   */
 
 	  //Shows default cycle value
 	  EventBus.post(new InitSnoozingStateEvent());

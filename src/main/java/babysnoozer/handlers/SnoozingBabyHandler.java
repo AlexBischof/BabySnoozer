@@ -73,7 +73,7 @@ public class SnoozingBabyHandler {
   @Subscribe
   @AllowConcurrentEvents
   public void handleSnoozingStartEvent(SnoozingStartEvent snoozingStartEvent) {
-	EventBus.post(new DisplayBrightnessEvent(DisplayBrightnessEvent.Brightness.LOW.getValue()));
+	EventBus.post(new DisplayBrightnessEvent(DisplayBrightnessEvent.Brightness.FULL.getValue()));
 
     /*
      * Creates CommandQueue
@@ -83,27 +83,30 @@ public class SnoozingBabyHandler {
 	//TODO velocities and acceleration into properties
 	CycleQueue cycles = new CycleCreator()
 			.create(new CycleCreationParam(cycleCount, 1000l, SnoozingBabyStateMachine.getStartPos(),
-			                               SnoozingBabyStateMachine.getEndPos(), BrickServoWrapper.Velocity.lvl1,
-			                               BrickServoWrapper.Acceleration.lvl1, BrickServoWrapper.Velocity.lvl1,
-			                               BrickServoWrapper.Acceleration.lvl1));
+			                               SnoozingBabyStateMachine.getEndPos(), BrickServoWrapper.Velocity.lvl2,
+			                               BrickServoWrapper.Acceleration.lvl2, BrickServoWrapper.Velocity.lvl2,
+			                               BrickServoWrapper.Acceleration.lvl2));
 	SnoozingBabyStateMachine.setCycles(cycles);
 
-    System.out.println(cycles);
+	System.out.println(cycles);
 
 	fireNextCommand();
   }
 
   private void fireNextCommand() {
 	CycleQueue cycles = SnoozingBabyStateMachine.getCycles();
-	Command command = cycles.nextCommand();
 
 	try {
+	  Command command = cycles.nextCommand();
 
 	  System.out.println("Executing " + command);
 	  getCommandExecutor().execute(command);
+
+	  EventBus.post(new DisplayTextEvent(String.valueOf(cycles.size())));
+
 	} catch (NoSuchElementException e) {
-	  //TODO Ähm
-	  //EventBus.post(new ShutdownEvent());
+	  EventBus.post(new DisplayTextEvent("0"));
+	  EventBus.post(new ShutdownEvent());
 	}
   }
 

@@ -27,7 +27,7 @@ public enum SnoozingBabyStateMachine {
 
 	//readValues from cycleconfig.properties
 	try {
-	  Properties servoConfigProperties = new PropertiesLoader("cycleconfig.properties").load();
+	  Properties servoConfigProperties = new PropertiesLoader("cycleconfig.properties", false).load();
 
 	  setStartPos(Short.valueOf(servoConfigProperties.getProperty("startPos")));
 	  setEndPos(Short.valueOf(servoConfigProperties.getProperty("endPos")));
