@@ -22,8 +22,8 @@ public class BrickServoWrapper {
   public enum Velocity {
 	lvl1("50", "speed_lvl1"),
 	lvl2("100", "speed_lvl2"),
-	lvl3("200", "speed_lvl3"),
-	lvl4("1000", "speed_lvl4"),
+	lvl3("600", "speed_lvl3"),
+	lvl4("10000", "speed_lvl4"),
 	max("65535", "speed_max"),
 	learn("50", "speed_learn");
 
@@ -47,8 +47,8 @@ public class BrickServoWrapper {
   public enum Acceleration {
 	lvl1("50", "acc_lvl1"),
 	lvl2("100", "acc_lvl2"),
-	lvl3("200", "acc_lvl3"),
-	lvl4("1000", "acc_lvl4"),
+	lvl3("600", "acc_lvl3"),
+	lvl4("10000", "acc_lvl4"),
 	max("65535", "acc_max"),
 	learn("50", "acc_learn");
 

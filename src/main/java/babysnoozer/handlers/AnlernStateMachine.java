@@ -30,6 +30,12 @@ public class AnlernStateMachine {
 
   private State state = State.Null;
 
+	private int initStartPos;
+	private int initEndPos;
+	private long initReleaseWait;
+
+  private int currPos = 0;
+
   @Subscribe
   @AllowConcurrentEvents
   public void handleRotiPressEvent(RotiPressEvent rotiPressEvent) throws TimeoutException, NotConnectedException {
@@ -55,6 +61,18 @@ public class AnlernStateMachine {
 	  return;
 	}
 
+	  if (learnEvent.hasInitValues) {
+		  this.initStartPos = learnEvent.optStartPos;
+		  this.initEndPos = learnEvent.optEndPos;
+		  this.initReleaseWait = learnEvent.optReleaseWait;
+	  }
+	  else {
+		  // set initial values
+		  this.initStartPos = 900;
+		  this.initEndPos = 700;
+		  this.initReleaseWait = 120000l;
+	  }
+
 	if (state.equals(State.Null)) {
 	  handleRotiPressEventForNullState();
 	}
@@ -72,11 +90,18 @@ public class AnlernStateMachine {
 	if (acceptRotiCountEvent) {
 
 	  int count = rotiCountEvent.getCount();
+		try {
+			// reset roti
+			TinkerforgeSystem.getRoti().getCount(/*reset*/ true);
+		}
+	    catch (Exception e) {
+		  e.printStackTrace();
+	  	}
 
 	  //TODO binden an properties
-	  int zaehlerwert = fireCount(count);
+	  this.currPos = fireCount(count);
 
-	  EventBus.post(new SetServoPosEvent((short) zaehlerwert, Velocity.learn, Acceleration.learn));
+	  EventBus.post(new SetServoPosEvent((short) this.currPos, Velocity.learn, Acceleration.learn));
 	} else {
 	  int count = rotiCountEvent.getCount();
 
@@ -93,6 +118,7 @@ public class AnlernStateMachine {
 	  this.state = State.EndPos;
 	  EventBus.post(new DisplayTextEvent("SetE"));
 	  EventBus.post(new SetSnoozingStartPosEvent(TinkerforgeSystem.getServo().getCurrentPosition()));
+		this.currPos = initEndPos;
 	} else if (state.equals(State.EndPos)) {
 	  EventBus.post(new DisplayTextEvent("End"));
 	  EventBus.post(new SetSnoozingEndPosEvent(TinkerforgeSystem.getServo().getCurrentPosition()));
@@ -125,11 +151,11 @@ public class AnlernStateMachine {
 		//Statuswechsel
 		AnlernStateMachine.this.state = AnlernStateMachine.State.StartPos;
 
+		  // reset roti
+		  TinkerforgeSystem.getRoti().getCount(/*reset*/ true);
 		Thread.sleep(1000l);
-		fireCount(TinkerforgeSystem.getRoti().getCount(false));
-
-		//TODO weil auch zwischendrin gedreht werden kann
-		TinkerforgeSystem.getRoti().getCount(/*reset*/ true);
+		  currPos = initStartPos;
+		  EventBus.post(new DisplayTextEvent(String.valueOf(initStartPos)));
 
 	  } catch (Exception e) {
 		e.printStackTrace();
@@ -143,7 +169,8 @@ public class AnlernStateMachine {
   }
 
   private int fireCount(int count) {
-	int zaehlerwert = Math.min(900, Math.max(-900, 900 - (10 * count)));
+	int zaehlerwert = this.currPos + 10 * count;
+	  zaehlerwert = Math.min(900, Math.max(-900, zaehlerwert));
 	EventBus.post(new DisplayTextEvent(String.valueOf(zaehlerwert)));
 	return zaehlerwert;
   }

@@ -19,6 +19,16 @@ public enum SnoozingBabyStateMachine {
   private int cycleCount = 1;
   private CycleQueue cycles;
 
+  public void setReleaseWaitTime(long releaseWaitTime) {
+    this.releaseWaitTime = releaseWaitTime;
+  }
+
+  public long getReleaseWaitTime() {
+    return releaseWaitTime;
+  }
+
+  private long releaseWaitTime = 120000l;
+
   public State getState() {
 	return state;
   }

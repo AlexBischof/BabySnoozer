@@ -44,25 +44,37 @@ public class SnoozingBabyHandler {
   @AllowConcurrentEvents
   public void handleRotiPressEvent(RotiPressEvent rotiPressEvent) {
 	if (SnoozingBabyStateMachine.getState().equals(State.SetCycleCount)) {
-	  SnoozingBabyStateMachine.setState(State.Snooze);
-	  EventBus.post(new SnoozingStartEvent());
+		if (rotiPressEvent.getPressedLengthInMs() > 2000)
+		{
+			// button pressed for more than 2s -> learn event triggered
+			// reset state and jump to learn routine
+			SnoozingBabyStateMachine.setState(State.Null);
+			EventBus.post(new LearnEvent(
+					SnoozingBabyStateMachine.getStartPos(),
+					SnoozingBabyStateMachine.getEndPos(),
+					SnoozingBabyStateMachine.getReleaseWaitTime()));
+		}
+		else {
+			SnoozingBabyStateMachine.setState(State.Snooze);
+			EventBus.post(new SnoozingStartEvent());
 
-	  //Saves values to cycleconfig.properties
-	  Properties properties = null;
-	  try {
+			//Saves values to cycleconfig.properties
+			Properties properties = null;
+			try {
 
-		//TODO Filenotfoundexception
-		//Files.ex
-		PropertiesLoader propertiesLoader = new PropertiesLoader("cycleconfig.properties", false);
-		properties = propertiesLoader.load();
-		properties.setProperty("startPos", String.valueOf(SnoozingBabyStateMachine.getStartPos()));
-		properties.setProperty("endPos", String.valueOf(SnoozingBabyStateMachine.getEndPos()));
-		properties.setProperty("cycleCount", String.valueOf(SnoozingBabyStateMachine.getCycleCount()));
+				//TODO Filenotfoundexception
+				//Files.ex
+				PropertiesLoader propertiesLoader = new PropertiesLoader("cycleconfig.properties", false);
+				properties = propertiesLoader.load();
+				properties.setProperty("startPos", String.valueOf(SnoozingBabyStateMachine.getStartPos()));
+				properties.setProperty("endPos", String.valueOf(SnoozingBabyStateMachine.getEndPos()));
+				properties.setProperty("cycleCount", String.valueOf(SnoozingBabyStateMachine.getCycleCount()));
 
-		propertiesLoader.store(properties);
-	  } catch (IOException e) {
-		e.printStackTrace();
-	  }
+				propertiesLoader.store(properties);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
   }
 
@@ -96,14 +108,16 @@ public class SnoozingBabyHandler {
 	int cycleCount = SnoozingBabyStateMachine.getCycleCount();
 
 	//TODO velocities and acceleration into properties
-	Velocity releaseVelocity = Velocity.lvl3;
+	Velocity releaseVelocity = Velocity.lvl4;
 	Velocity drawVelocity = Velocity.lvl4;
 
 	CycleQueue cycles = new CycleCreator()
-			.create(new CycleCreationParam(cycleCount, 100l, 111000l, SnoozingBabyStateMachine.getStartPos(),
-			                               SnoozingBabyStateMachine.getEndPos(), drawVelocity,
-			                               Acceleration.lvl2, releaseVelocity,
-			                               Acceleration.lvl2));
+			.create(new CycleCreationParam(
+					cycleCount,
+					100l, SnoozingBabyStateMachine.getReleaseWaitTime(),
+					SnoozingBabyStateMachine.getStartPos(), SnoozingBabyStateMachine.getEndPos(),
+					drawVelocity, Acceleration.lvl3,
+					releaseVelocity, Acceleration.lvl3));
 	SnoozingBabyStateMachine.setCycles(cycles);
 
 	System.out.println(cycles);
