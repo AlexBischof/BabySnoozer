@@ -1,7 +1,7 @@
 package babysnoozer.handlers.commands;
 
-import static babysnoozer.tinkerforge.BrickServoWrapper.Acceleration;
-import static babysnoozer.tinkerforge.BrickServoWrapper.Velocity;
+import static babysnoozer.tinkerforge.BrickStepperWrapper.Acceleration;
+import static babysnoozer.tinkerforge.BrickStepperWrapper.Velocity;
 
 /**
  * Encapsulates cycleCreation params.

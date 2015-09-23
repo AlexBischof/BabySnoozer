@@ -5,8 +5,8 @@ import org.junit.Test;
 
 import java.util.NoSuchElementException;
 
-import static babysnoozer.tinkerforge.BrickServoWrapper.Acceleration;
-import static babysnoozer.tinkerforge.BrickServoWrapper.Velocity;
+import static babysnoozer.tinkerforge.BrickStepperWrapper.Acceleration;
+import static babysnoozer.tinkerforge.BrickStepperWrapper.Velocity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CycleQueueTest {

@@ -3,7 +3,7 @@ package babysnoozer.handlers;
 import babysnoozer.config.PropertiesLoader;
 import babysnoozer.events.*;
 import babysnoozer.handlers.commands.*;
-import babysnoozer.tinkerforge.BrickServoWrapper;
+import babysnoozer.tinkerforge.BrickStepperWrapper;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.tinkerforge.BrickletRotaryEncoder;
@@ -18,12 +18,9 @@ import java.util.concurrent.TimeUnit;
 import static babysnoozer.EventBus.EventBus;
 import static babysnoozer.handlers.SnoozingBabyStateMachine.SnoozingBabyStateMachine;
 import static babysnoozer.handlers.SnoozingBabyStateMachine.State;
-import static babysnoozer.tinkerforge.BrickServoWrapper.*;
+import static babysnoozer.tinkerforge.BrickStepperWrapper.*;
 import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
 
-/**
- * Created by Alexander Bischof on 12.01.15.
- */
 public class SnoozingBabyHandler {
 
   private CommandExecutor commandExecutor;
@@ -144,7 +141,7 @@ public class SnoozingBabyHandler {
 
   @Subscribe
   @AllowConcurrentEvents
-  public void handleServoPositionReachedEvent(ServoPositionReachedEvent positionReachedEvent)
+  public void handleStepperPositionReachedEvent(StepperPositionReachedEvent positionReachedEvent)
 		  throws TimeoutException, NotConnectedException {
 	if (!SnoozingBabyStateMachine.getState().equals(State.Snooze))
 	  // do only run that function is target state was already set by handleSnoozingStartEvent

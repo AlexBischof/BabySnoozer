@@ -24,14 +24,14 @@ public class RopeDistanceTest {
   private RopeDistance ropeDistance;
 
   private int percentage;
-  private short expectedPos;
+  private int expectedPos;
 
   public RopeDistanceTest(int startPos, int endPos, int percentage, int expectedPos) {
 	this.ropeDistance = new RopeDistance();
-	this.ropeDistance.setStartPos((short) startPos);
-	this.ropeDistance.setEndPos((short) endPos);
+	this.ropeDistance.setStartPos((int) startPos);
+	this.ropeDistance.setEndPos((int) endPos);
 	this.percentage = percentage;
-	this.expectedPos = (short) expectedPos;
+	this.expectedPos = (int) expectedPos;
   }
 
   @Test

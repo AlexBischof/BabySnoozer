@@ -1,8 +1,8 @@
 package babysnoozer.handlers.commands;
 
 import babysnoozer.EventBus;
-import babysnoozer.events.ServoPositionReachedEvent;
-import babysnoozer.events.SetServoPosEvent;
+import babysnoozer.events.StepperPositionReachedEvent;
+import babysnoozer.events.SetStepperPosEvent;
 
 /**
  * Created by Alexander Bischof on 10.03.15.
@@ -17,11 +17,11 @@ public class CommandExecutor {
 	  } catch (InterruptedException e) {
 		e.printStackTrace();
 	  } finally {
-		EventBus.EventBus.post(new ServoPositionReachedEvent());
+		EventBus.EventBus.post(new StepperPositionReachedEvent());
 	  }
 	} else if (command instanceof PositionCommand) {
 	  PositionCommand positionCommand = (PositionCommand) command;
-	  EventBus.EventBus.post(new SetServoPosEvent(positionCommand.getPosition(), positionCommand.getVelocity(),
+	  EventBus.EventBus.post(new SetStepperPosEvent(positionCommand.getPosition(), positionCommand.getVelocity(),
 	                                              positionCommand.getAcceleration()));
 	}
   }

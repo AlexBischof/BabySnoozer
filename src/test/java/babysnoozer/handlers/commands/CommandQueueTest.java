@@ -1,6 +1,6 @@
 package babysnoozer.handlers.commands;
 
-import babysnoozer.tinkerforge.BrickServoWrapper;
+import babysnoozer.tinkerforge.BrickStepperWrapper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,7 +17,7 @@ public class CommandQueueTest {
 
   @Test
   public void testAddPositionCommand() {
-	commandQueue.add(new PositionCommand(100, BrickServoWrapper.Velocity.learn, BrickServoWrapper.Acceleration.learn));
+	commandQueue.add(new PositionCommand(100, BrickStepperWrapper.Velocity.learn, BrickStepperWrapper.Acceleration.learn));
 
 	assertThat(commandQueue).hasSize(1);
   }

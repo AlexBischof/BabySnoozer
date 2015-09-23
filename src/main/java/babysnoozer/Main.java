@@ -10,8 +10,8 @@ import java.util.Properties;
 
 import static babysnoozer.EventBus.EventBus;
 import static babysnoozer.handlers.SnoozingBabyStateMachine.SnoozingBabyStateMachine;
-import static babysnoozer.tinkerforge.BrickServoWrapper.Acceleration;
-import static babysnoozer.tinkerforge.BrickServoWrapper.Velocity;
+import static babysnoozer.tinkerforge.BrickStepperWrapper.Acceleration;
+import static babysnoozer.tinkerforge.BrickStepperWrapper.Velocity;
 import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
 
 /**
@@ -39,7 +39,7 @@ public class Main implements Closeable {
 	  Properties loader = new PropertiesLoader("initialpositionrecall.properties", false).load();
 	  Short initialPositionRecall = Short.valueOf(loader.getProperty("lastPosition", "800"));
 	  System.out.println("Heading initialPostionRecall: " + initialPositionRecall);
-	  EventBus.post(new SetServoPosEvent(
+	  EventBus.post(new SetStepperPosEvent(
 			  initialPositionRecall,
 			  Velocity.max, Acceleration.max));
 	  Thread.sleep(SHOW_SNOOZING_BABY_IN_MS);

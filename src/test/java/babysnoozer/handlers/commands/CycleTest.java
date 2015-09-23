@@ -1,6 +1,6 @@
 package babysnoozer.handlers.commands;
 
-import babysnoozer.tinkerforge.BrickServoWrapper;
+import babysnoozer.tinkerforge.BrickStepperWrapper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,8 +30,8 @@ public class CycleTest {
   @Test
   public void testNextCommand_MultipleCommands_WillReturnFirstAddedCommand() throws Exception {
 	WaitCommand command = new WaitCommand(50);
-	PositionCommand positionCommand = new PositionCommand(10, BrickServoWrapper.Velocity.learn,
-	                                                      BrickServoWrapper.Acceleration.learn);
+	PositionCommand positionCommand = new PositionCommand(10, BrickStepperWrapper.Velocity.learn,
+	                                                       BrickStepperWrapper.Acceleration.learn);
 	cycle.addCommand(command);
 	cycle.addCommand(positionCommand);
 	assertThat(cycle.nextCommand()).isEqualTo(command);

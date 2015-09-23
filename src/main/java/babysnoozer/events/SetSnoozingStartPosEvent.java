@@ -1,17 +1,14 @@
 package babysnoozer.events;
 
-/**
- * Created by Alexander Bischof on 12.01.15.
- */
 public class SetSnoozingStartPosEvent {
-  private final short startPos;
+    private final int startPos;
 
-  public SetSnoozingStartPosEvent(short startPos) {
-	this.startPos = startPos;
-  }
+    public SetSnoozingStartPosEvent(int startPos) {
+        this.startPos = startPos;
+    }
 
-  public short getStartPos() {
-	return startPos;
-  }
+    public int getStartPos() {
+        return startPos;
+    }
 }
 

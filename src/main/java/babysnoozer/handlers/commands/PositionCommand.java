@@ -1,8 +1,8 @@
 package babysnoozer.handlers.commands;
 
-import babysnoozer.tinkerforge.BrickServoWrapper;
+import babysnoozer.tinkerforge.BrickStepperWrapper;
 
-import static babysnoozer.tinkerforge.BrickServoWrapper.*;
+import static babysnoozer.tinkerforge.BrickStepperWrapper.*;
 
 /**
  * Created by Alexander Bischof on 10.03.15.

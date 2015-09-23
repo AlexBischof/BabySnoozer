@@ -30,7 +30,7 @@ public enum EventBus {
 	eventBus.register(new LogHandler());
 	eventBus.register(new DisplayHandler());
 	eventBus.register(new AnlernStateMachine());
-	eventBus.register(new ServoHandler());
+	eventBus.register(new StepperHandler());
 	eventBus.register(new SnoozingBabyHandler());
   }
 

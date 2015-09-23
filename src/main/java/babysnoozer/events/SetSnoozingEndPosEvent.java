@@ -4,13 +4,13 @@ package babysnoozer.events;
  * Created by Alexander Bischof on 12.01.15.
  */
 public class SetSnoozingEndPosEvent {
-  private final short endPos;
+  private final int endPos;
 
-  public SetSnoozingEndPosEvent(short endPos) {
+  public SetSnoozingEndPosEvent(int endPos) {
 	this.endPos = endPos;
   }
 
-  public short getEndPos() {
+  public int getEndPos() {
 	return endPos;
   }
 }
