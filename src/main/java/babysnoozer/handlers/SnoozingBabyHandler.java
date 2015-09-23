@@ -105,16 +105,16 @@ public class SnoozingBabyHandler {
 	int cycleCount = SnoozingBabyStateMachine.getCycleCount();
 
 	//TODO velocities and acceleration into properties
-	Velocity releaseVelocity = Velocity.lvl4;
-	Velocity drawVelocity = Velocity.lvl4;
+	Velocity releaseVelocity = Velocity.lvl1;
+	Velocity drawVelocity = Velocity.lvl1;
 
 	CycleQueue cycles = new CycleCreator()
 			.create(new CycleCreationParam(
 					cycleCount,
 					100l, SnoozingBabyStateMachine.getReleaseWaitTime(),
 					SnoozingBabyStateMachine.getStartPos(), SnoozingBabyStateMachine.getEndPos(),
-					drawVelocity, Acceleration.lvl3,
-					releaseVelocity, Acceleration.lvl3));
+					drawVelocity, Acceleration.lvl1,
+					releaseVelocity, Acceleration.lvl1));
 	SnoozingBabyStateMachine.setCycles(cycles);
 
 	System.out.println(cycles);

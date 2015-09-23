@@ -67,7 +67,6 @@ public class BrickStepperWrapper {
     }
 
     BrickStepper brickStepper;
-    short servoNumber;
 
     public BrickStepperWrapper() {
 
@@ -101,8 +100,10 @@ public class BrickStepperWrapper {
 
         //Sets nextCommand properties
         brickStepper.setMinimumVoltage(Integer.valueOf(stepperConfigProperties.getProperty("outputVoltage", "7200")));
+        brickStepper.setMotorCurrent(800);
+        brickStepper.setStepMode((short)8);
 
-        brickStepper.setMaxVelocity(Integer.valueOf(stepperConfigProperties.getProperty("acceleration", "2000")));
+        brickStepper.setMaxVelocity(Integer.valueOf(stepperConfigProperties.getProperty("acceleration", "200")));
 
         //Sets Stepper Listener
         StepperListener stepperListener = new StepperListener();

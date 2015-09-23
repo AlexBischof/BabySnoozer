@@ -101,7 +101,7 @@ public class AnlernStateMachine {
             //TODO binden an properties
             this.currPos = fireCount(count);
 
-            EventBus.post(new SetStepperPosEvent((int) this.currPos, Velocity.learn, Acceleration.learn));
+            EventBus.post(new SetStepperPosEvent(this.currPos, Velocity.learn, Acceleration.learn));
         } else {
             int count = rotiCountEvent.getCount();
 
