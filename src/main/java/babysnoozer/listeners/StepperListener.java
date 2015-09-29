@@ -2,6 +2,8 @@ package babysnoozer.listeners;
 
 import babysnoozer.events.AkkuEmptyEvent;
 import babysnoozer.events.StepperPositionReachedEvent;
+import babysnoozer.events.StepperDisableEvent;
+import babysnoozer.tinkerforge.TinkerforgeSystem;
 import com.tinkerforge.BrickStepper;
 
 import static babysnoozer.EventBus.EventBus;
@@ -14,6 +16,7 @@ public class StepperListener implements BrickStepper.UnderVoltageListener, Brick
   }
 
   @Override public void positionReached(int position) {
+    EventBus.post(new StepperDisableEvent());
 	EventBus.post(new StepperPositionReachedEvent());
   }
 }

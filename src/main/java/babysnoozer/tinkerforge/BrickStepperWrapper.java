@@ -66,7 +66,7 @@ public class BrickStepperWrapper {
         }
     }
 
-    BrickStepper brickStepper;
+    public BrickStepper brickStepper;
 
     public BrickStepperWrapper() {
 
@@ -99,11 +99,15 @@ public class BrickStepperWrapper {
     public void configStepper() throws TimeoutException, NotConnectedException {
 
         //Sets nextCommand properties
-        brickStepper.setMinimumVoltage(Integer.valueOf(stepperConfigProperties.getProperty("outputVoltage", "7200")));
+        brickStepper.setMinimumVoltage(Integer.valueOf(stepperConfigProperties.getProperty("outputVoltage", "7500")));
         brickStepper.setMotorCurrent(800);
         brickStepper.setStepMode((short)8);
 
-        brickStepper.setMaxVelocity(Integer.valueOf(stepperConfigProperties.getProperty("acceleration", "200")));
+        brickStepper.setMaxVelocity(Integer.valueOf(stepperConfigProperties.getProperty("speed_lvl3", "200")));
+        brickStepper.setSpeedRamping(Integer.valueOf(stepperConfigProperties.getProperty("acc_lvl3", "200")),
+                Integer.valueOf(stepperConfigProperties.getProperty("acc_lvl4", "200")));
+
+        brickStepper.setDecay(Integer.valueOf(stepperConfigProperties.getProperty("decay", "10000")));
 
         //Sets Stepper Listener
         StepperListener stepperListener = new StepperListener();
@@ -115,8 +119,16 @@ public class BrickStepperWrapper {
         return brickStepper.getCurrentPosition();
     }
 
+    public void setCurrentPosition(int position) throws TimeoutException, NotConnectedException {
+        brickStepper.setCurrentPosition(position);
+    }
+
     public void setPosition(int position) throws TimeoutException, NotConnectedException {
         brickStepper.setTargetPosition(position);
+    }
+
+    public void setDecay(int decay) throws TimeoutException, NotConnectedException {
+        brickStepper.setDecay(decay);
     }
 
     public void enable() throws TimeoutException, NotConnectedException {

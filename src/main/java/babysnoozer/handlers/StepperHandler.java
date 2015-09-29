@@ -4,6 +4,7 @@ import babysnoozer.config.PropertiesLoader;
 import babysnoozer.events.SetStepperPosEvent;
 import babysnoozer.events.StepperPositionReachedEvent;
 import babysnoozer.events.ShutdownEvent;
+import babysnoozer.events.StepperDisableEvent;
 import babysnoozer.tinkerforge.BrickStepperWrapper;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -56,5 +57,14 @@ public class StepperHandler {
             stepper.setVelocity(setStepperPosEvent.getVelocity());
             stepper.enable();
         }
+    }
+
+    @Subscribe
+    @AllowConcurrentEvents
+    public void handleStepperDisableEvent(StepperDisableEvent stepperDisableEvent)
+            throws TimeoutException, NotConnectedException {
+
+        BrickStepperWrapper stepper = TinkerforgeSystem.getStepper();
+        stepper.disable();
     }
 }

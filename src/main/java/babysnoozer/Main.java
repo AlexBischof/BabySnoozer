@@ -7,6 +7,7 @@ import com.tinkerforge.NotConnectedException;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.TimeoutException;
 
 import static babysnoozer.EventBus.EventBus;
 import static babysnoozer.handlers.SnoozingBabyStateMachine.SnoozingBabyStateMachine;
@@ -38,15 +39,9 @@ public class Main implements Closeable {
             // (without moving)
             Properties loader = new PropertiesLoader("initialpositionrecall.properties", false).load();
             Integer initialPositionRecall = Integer.valueOf(loader.getProperty("lastPosition", "800"));
-            System.out.println("Heading initialPostionRecall: " + initialPositionRecall);
-            EventBus.post(new SetStepperPosEvent(
-                    initialPositionRecall,
-                    Velocity.lvl1, Acceleration.lvl1));
+            TinkerforgeSystem.getStepper().setCurrentPosition(initialPositionRecall);
             Thread.sleep(SHOW_SNOOZING_BABY_IN_MS);
 
-	  /*
-	   *
-	   */
             try {
                 Properties stepperConfigProperties = new PropertiesLoader("cycleconfig.properties", false).load();
 
