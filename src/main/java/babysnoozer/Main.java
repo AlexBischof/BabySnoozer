@@ -37,8 +37,12 @@ public class Main implements Closeable {
             // It should be set here with velocity and acc max
             // this overwrites the brick firmware init value of 0 immediately
             // (without moving)
-            Properties loader = new PropertiesLoader("initialpositionrecall.properties", false).load();
-            Integer initialPositionRecall = Integer.valueOf(loader.getProperty("lastPosition", "800"));
+            int initialPositionRecall = 0;
+            try {
+                Properties loader = new PropertiesLoader("initialpositionrecall.properties", false).load();
+                initialPositionRecall = Integer.valueOf(loader.getProperty("lastPosition", "800"));
+            } catch (IOException e)
+            {}
             TinkerforgeSystem.getStepper().setCurrentPosition(initialPositionRecall);
             Thread.sleep(SHOW_SNOOZING_BABY_IN_MS);
 
