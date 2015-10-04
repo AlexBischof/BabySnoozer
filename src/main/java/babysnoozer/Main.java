@@ -15,8 +15,6 @@ import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
 public class Main implements Closeable {
 
     private static long snooze_display_time = 2000;
-    private static long wait_after_release = 120000;
-    private static long wait_after_draw = 1000;
 
     public static void main(String[] args) throws Exception {
 
@@ -29,8 +27,6 @@ public class Main implements Closeable {
             try {
                 programProperties = new PropertiesLoader("program.properties", false).load();
                 snooze_display_time = Long.valueOf(programProperties.getProperty("snooze_display_time", "2000"));
-                wait_after_release = Long.valueOf(programProperties.getProperty("wait_after_release", "120000"));
-                wait_after_draw = Long.valueOf(programProperties.getProperty("wait_after_draw", "2000"));
             } catch (IOException ignored)
             {}
 
@@ -42,19 +38,20 @@ public class Main implements Closeable {
             int initialPositionRecall = 0;
             try {
                 Properties loader = new PropertiesLoader("initialpositionrecall.properties", false).load();
-                initialPositionRecall = Integer.valueOf(loader.getProperty("lastPosition", "800"));
+                initialPositionRecall = Integer.valueOf(loader.getProperty("lastPosition", "0"));
             } catch (IOException ignored)
             {}
             TinkerforgeSystem.getStepper().setCurrentPosition(initialPositionRecall);
             Thread.sleep(snooze_display_time);
 
             try {
-                Properties stepperConfigProperties = new PropertiesLoader("cycleconfig.properties", false).load();
+                Properties cycleConfigProperties = new PropertiesLoader("cycleconfig.properties", false).load();
 
-                SnoozingBabyStateMachine.setStartPos(Integer.valueOf(stepperConfigProperties.getProperty("startPos")));
-                SnoozingBabyStateMachine.setEndPos(Integer.valueOf(stepperConfigProperties.getProperty("endPos")));
-
-                SnoozingBabyStateMachine.setCycleCount(Integer.valueOf(stepperConfigProperties.getProperty("cycleCount")));
+                SnoozingBabyStateMachine.setStartPos(Integer.valueOf(cycleConfigProperties.getProperty("startPos")));
+                SnoozingBabyStateMachine.setEndPos(Integer.valueOf(cycleConfigProperties.getProperty("endPos")));
+                SnoozingBabyStateMachine.setCycleCount(Integer.valueOf(cycleConfigProperties.getProperty("cycleCount")));
+                SnoozingBabyStateMachine.setDrawWaitTime(Long.valueOf(cycleConfigProperties.getProperty("wait_after_draw")));
+                SnoozingBabyStateMachine.setReleaseWaitTime(Long.valueOf(cycleConfigProperties.getProperty("wait_after_release")));
 
                 EventBus.post(new InitSnoozingStateEvent());
             } catch (IOException e) {
