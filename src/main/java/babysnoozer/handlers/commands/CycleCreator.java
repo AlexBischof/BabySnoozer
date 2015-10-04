@@ -5,33 +5,40 @@ package babysnoozer.handlers.commands;
  */
 public class CycleCreator {
 
-  public CycleQueue create(CycleCreationParam cycleCreationParam) {
+    public CycleQueue create(CycleCreationParam cycleCreationParam) {
 
-	CycleQueue cycleQueue = new CycleQueue();
+        CycleQueue cycleQueue = new CycleQueue();
 
-    /*
-     * Creates commands per cycle
-     */
-	for (int i = 0; i < cycleCreationParam.getCycleCount(); i++) {
+        /*
+         * Creates commands per cycle
+         */
+        for (int i = 0; i < cycleCreationParam.getCycleCount(); i++) {
 
-	  Cycle cycle = new Cycle();
-	  cycleQueue.add(cycle);
+            Cycle cycle = new Cycle();
+            cycleQueue.add(cycle);
 
-	  //Draw command
-	  cycle.addCommand(new PositionCommand(cycleCreationParam.getEndPos(), cycleCreationParam.getDrawVelocity(),
-	                                       cycleCreationParam.getDrawAcceleration()));
+            //Draw command
+            cycle.addCommand(new PositionCommand(
+                    cycleCreationParam.getEndPos(),
+                    cycleCreationParam.getDrawVelocity(),
+                    cycleCreationParam.getDrawAcceleration(),
+                    cycleCreationParam.getDrawDeacceleration()));
 
-	  //Draw-Wait
-	  cycle.addCommand(new WaitCommand(cycleCreationParam.getDrawWait()));
+            //Draw-Wait
+            cycle.addCommand(new WaitCommand(cycleCreationParam.getDrawWait()));
 
-	  //Release
-	  cycle.addCommand(new PositionCommand(cycleCreationParam.getStartPos(), cycleCreationParam.getReleaseVelocity(),
-	                                       cycleCreationParam.getReleaseAcceleration()));
+            //Release
+            cycle.addCommand(new PositionCommand(
+                            cycleCreationParam.getStartPos(),
+                            cycleCreationParam.getReleaseVelocity(),
+                            cycleCreationParam.getReleaseAcceleration(),
+                            cycleCreationParam.getReleaseDeacceleration())
+            );
 
-	  //Release-Wait
-	  cycle.addCommand(new WaitCommand(cycleCreationParam.getReleaseWait()));
-	}
+            //Release-Wait
+            cycle.addCommand(new WaitCommand(cycleCreationParam.getReleaseWait()));
+        }
 
-	return cycleQueue;
-  }
+        return cycleQueue;
+    }
 }

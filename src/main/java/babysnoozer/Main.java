@@ -7,21 +7,16 @@ import com.tinkerforge.NotConnectedException;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.concurrent.TimeoutException;
 
 import static babysnoozer.EventBus.EventBus;
 import static babysnoozer.handlers.SnoozingBabyStateMachine.SnoozingBabyStateMachine;
-import static babysnoozer.tinkerforge.BrickStepperWrapper.Acceleration;
-import static babysnoozer.tinkerforge.BrickStepperWrapper.Velocity;
 import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
 
-/**
- * Created by Alexander Bischof on 10.01.15.
- */
 public class Main implements Closeable {
 
-    //TODO refac to conf file
-    private static final long SHOW_SNOOZING_BABY_IN_MS = 2000l;
+    private static long snooze_display_time = 2000;
+    private static long wait_after_release = 120000;
+    private static long wait_after_draw = 1000;
 
     public static void main(String[] args) throws Exception {
 
@@ -30,21 +25,28 @@ public class Main implements Closeable {
             //InitBricks
             TinkerforgeSystem.initBricks();
 
+            Properties programProperties;
+            try {
+                programProperties = new PropertiesLoader("program.properties", false).load();
+                snooze_display_time = Long.valueOf(programProperties.getProperty("snooze_display_time", "2000"));
+                wait_after_release = Long.valueOf(programProperties.getProperty("wait_after_release", "120000"));
+                wait_after_draw = Long.valueOf(programProperties.getProperty("wait_after_draw", "2000"));
+            } catch (IOException ignored)
+            {}
+
             //Shows 3s Snoozing Baby
             EventBus.post(new DisplayTextEvent("Snoozing Baby"));
 
-            // TODO: Read first position from last shutdown (file access)
-            // It should be set here with velocity and acc max
-            // this overwrites the brick firmware init value of 0 immediately
-            // (without moving)
+            // read the last position from stepper motor and write it to stepper API
+            // that will be the starting point (TF inits with 0 commonly)
             int initialPositionRecall = 0;
             try {
                 Properties loader = new PropertiesLoader("initialpositionrecall.properties", false).load();
                 initialPositionRecall = Integer.valueOf(loader.getProperty("lastPosition", "800"));
-            } catch (IOException e)
+            } catch (IOException ignored)
             {}
             TinkerforgeSystem.getStepper().setCurrentPosition(initialPositionRecall);
-            Thread.sleep(SHOW_SNOOZING_BABY_IN_MS);
+            Thread.sleep(snooze_display_time);
 
             try {
                 Properties stepperConfigProperties = new PropertiesLoader("cycleconfig.properties", false).load();
@@ -56,7 +58,6 @@ public class Main implements Closeable {
 
                 EventBus.post(new InitSnoozingStateEvent());
             } catch (IOException e) {
-
                 System.out.println("cycleconfig.properties not found. Starting learning");
                 EventBus.post(new LearnEvent());
             }

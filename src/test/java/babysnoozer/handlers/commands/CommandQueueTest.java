@@ -17,7 +17,11 @@ public class CommandQueueTest {
 
   @Test
   public void testAddPositionCommand() {
-	commandQueue.add(new PositionCommand(100, BrickStepperWrapper.Velocity.learn, BrickStepperWrapper.Acceleration.learn));
+	commandQueue.add(new PositionCommand(
+            100,
+            BrickStepperWrapper.Velocity.learn,
+            BrickStepperWrapper.Acceleration.acc_learn,
+            BrickStepperWrapper.Acceleration.deacc_learn));
 
 	assertThat(commandQueue).hasSize(1);
   }

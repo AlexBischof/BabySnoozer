@@ -20,12 +20,9 @@ public class BrickStepperWrapper {
     private Properties stepperConfigProperties;
 
     public enum Velocity {
-        lvl1("50", "speed_lvl1"),
-        lvl2("100", "speed_lvl2"),
-        lvl3("600", "speed_lvl3"),
-        lvl4("10000", "speed_lvl4"),
-        max("65535", "speed_max"),
-        learn("50", "speed_learn");
+        draw("50", "speed_draw"),
+        release("100", "speed_release"),
+        learn("600", "speed_learn");
 
         private String defaultValue;
         private String propertyString;
@@ -45,12 +42,12 @@ public class BrickStepperWrapper {
     }
 
     public enum Acceleration {
-        lvl1("50", "acc_lvl1"),
-        lvl2("100", "acc_lvl2"),
-        lvl3("600", "acc_lvl3"),
-        lvl4("10000", "acc_lvl4"),
-        max("65535", "acc_max"),
-        learn("50", "acc_learn");
+        acc_draw("50", "acc_draw"),
+        deacc_draw("100", "deacc_draw"),
+        acc_release("600", "acc_release"),
+        deacc_release("10000", "deacc_release"),
+        acc_learn("65535", "acc_learn"),
+        deacc_learn("50", "deacc_learn");
 
         private String defaultValue;
         private String propertyString;
@@ -86,34 +83,25 @@ public class BrickStepperWrapper {
 
     public void setVelocity(Velocity velocity) throws TimeoutException, NotConnectedException {
         this.brickStepper.setMaxVelocity(valueOf(
-            stepperConfigProperties.getProperty(velocity.getPropertyString(), velocity.getDefaultValue())));
+                stepperConfigProperties.getProperty(velocity.getPropertyString(), velocity.getDefaultValue())));
     }
 
-    public void setAcceleration(Acceleration acceleration) throws TimeoutException, NotConnectedException {
-        // same acceleration as deacceleration
+    public void setAcceleration(Acceleration acc, Acceleration deacc) throws TimeoutException, NotConnectedException {
         this.brickStepper.setSpeedRamping(
-                valueOf(
-                    stepperConfigProperties.getProperty(
-                        acceleration.getPropertyString(), acceleration.getDefaultValue())),
-                valueOf(
-                    stepperConfigProperties
-                        .getProperty(acceleration.getPropertyString(), acceleration.getDefaultValue())));
+                valueOf(stepperConfigProperties.getProperty(acc.getPropertyString(), acc.getDefaultValue())),
+                valueOf(stepperConfigProperties.getProperty(deacc.getPropertyString(), deacc.getDefaultValue())));
     }
 
     public void configStepper() throws TimeoutException, NotConnectedException {
 
-        //Sets nextCommand properties
-        brickStepper.setMinimumVoltage(valueOf(stepperConfigProperties.getProperty("outputVoltage", "7500")));
-        brickStepper.setMotorCurrent(800);
-        brickStepper.setStepMode((short)8);
-
-        brickStepper.setMaxVelocity(valueOf(stepperConfigProperties.getProperty("speed_lvl4", "200")));
-        brickStepper.setSpeedRamping(valueOf(stepperConfigProperties.getProperty("acc_lvl3", "200")),
-                valueOf(stepperConfigProperties.getProperty("acc_lvl4", "200")));
+        // Sets properties
+        brickStepper.setMinimumVoltage(valueOf(stepperConfigProperties.getProperty("minOutputVoltage", "7200")));
+        brickStepper.setMotorCurrent(valueOf(stepperConfigProperties.getProperty("maxMotorCurrent", "800")));
+        brickStepper.setStepMode(Short.valueOf(stepperConfigProperties.getProperty("stepMode", "8")));
 
         brickStepper.setDecay(valueOf(stepperConfigProperties.getProperty("decay", String.valueOf("65535"))));
 
-        //Sets Stepper Listener
+        // Sets Stepper Listener
         StepperListener stepperListener = new StepperListener();
         brickStepper.addUnderVoltageListener(stepperListener);
         brickStepper.addPositionReachedListener(stepperListener);
@@ -129,10 +117,6 @@ public class BrickStepperWrapper {
 
     public void setPosition(int position) throws TimeoutException, NotConnectedException {
         brickStepper.setTargetPosition(position);
-    }
-
-    public void setDecay(int decay) throws TimeoutException, NotConnectedException {
-        brickStepper.setDecay(decay);
     }
 
     public void enable() throws TimeoutException, NotConnectedException {

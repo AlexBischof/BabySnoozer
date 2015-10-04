@@ -11,12 +11,15 @@ public class PositionCommand implements Command {
   private final short position;
   private final Velocity velocity;
   private final Acceleration acceleration;
+  private final Acceleration deacceleration;
 
   public PositionCommand(int position, Velocity velocity,
-                         Acceleration acceleration) {
+                         Acceleration acceleration,
+                         Acceleration deacceleration) {
 	this.position = (short) position;
 	this.velocity = velocity;
 	this.acceleration = acceleration;
+    this.deacceleration = deacceleration;
   }
 
   public short getPosition() {
@@ -31,11 +34,16 @@ public class PositionCommand implements Command {
 	return acceleration;
   }
 
+  public Acceleration getDeacceleration() {
+    return deacceleration;
+  }
+
   @Override public String toString() {
 	return "PositionCommand{" +
 	       "position=" + position +
 	       ", velocity=" + velocity +
 	       ", acceleration=" + acceleration +
+           ", deacceleration=" + deacceleration +
 	       '}';
   }
 }

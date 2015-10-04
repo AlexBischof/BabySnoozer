@@ -101,7 +101,11 @@ public class AnlernStateMachine {
             //TODO binden an properties
             this.currPos = fireCount(count);
 
-            EventBus.post(new SetStepperPosEvent(this.currPos, Velocity.learn, Acceleration.learn));
+            EventBus.post(new SetStepperPosEvent(
+                    this.currPos,
+                    Velocity.learn,
+                    Acceleration.acc_learn,
+                    Acceleration.deacc_learn));
         } else {
             int count = rotiCountEvent.getCount();
 
@@ -122,7 +126,11 @@ public class AnlernStateMachine {
         } else if (state.equals(State.EndPos)) {
             EventBus.post(new DisplayTextEvent("End"));
             EventBus.post(new SetSnoozingEndPosEvent(TinkerforgeSystem.getStepper().getCurrentPosition()));
-            EventBus.post(new SetStepperPosEvent(SnoozingBabyStateMachine.getStartPos(), Velocity.learn, Acceleration.learn));
+            EventBus.post(new SetStepperPosEvent(
+                    SnoozingBabyStateMachine.getStartPos(),
+                    Velocity.learn,
+                    Acceleration.acc_learn,
+                    Acceleration.deacc_learn));
             this.state = State.Null;
 
             EventBus.post(new InitSnoozingStateEvent());
@@ -140,7 +148,7 @@ public class AnlernStateMachine {
         //Setzt learn velocity
         BrickStepperWrapper stepper = TinkerforgeSystem.getStepper();
         stepper.setVelocity(Velocity.learn);
-        stepper.setAcceleration(Acceleration.learn);
+        stepper.setAcceleration(Acceleration.acc_learn, Acceleration.deacc_learn);
 
         //Nach 2 Sekunden Anzeige
         new Thread(() -> {
@@ -172,7 +180,7 @@ public class AnlernStateMachine {
         //TODO refac to config
         int zaehlerwert = this.currPos + 100 * count;
         zaehlerwert = Math.min(10000, Math.max(-10000, zaehlerwert));
-        EventBus.post(new DisplayTextEvent(String.valueOf(zaehlerwert)));
+        EventBus.post(new DisplayTextEvent(String.valueOf(zaehlerwert / 10)));
         return zaehlerwert;
     }
 }

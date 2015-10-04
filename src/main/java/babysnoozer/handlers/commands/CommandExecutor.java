@@ -21,8 +21,11 @@ public class CommandExecutor {
 	  }
 	} else if (command instanceof PositionCommand) {
 	  PositionCommand positionCommand = (PositionCommand) command;
-	  EventBus.EventBus.post(new SetStepperPosEvent(positionCommand.getPosition(), positionCommand.getVelocity(),
-	                                              positionCommand.getAcceleration()));
+	  EventBus.EventBus.post(new SetStepperPosEvent(
+			  positionCommand.getPosition(),
+			  positionCommand.getVelocity(),
+			  positionCommand.getAcceleration(),
+			  positionCommand.getDeacceleration()));
 	}
   }
 }

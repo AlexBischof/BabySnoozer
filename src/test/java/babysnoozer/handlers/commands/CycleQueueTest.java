@@ -40,7 +40,11 @@ public class CycleQueueTest {
   public void testNextCommand_TwoCycleOneCommandEach_WillGetBothCommands() {
 	//Given
 	WaitCommand command1 = new WaitCommand(50);
-	PositionCommand positionCommand = new PositionCommand(50, Velocity.learn, Acceleration.learn);
+	PositionCommand positionCommand = new PositionCommand(
+            50,
+            Velocity.learn,
+            Acceleration.acc_learn,
+            Acceleration.deacc_learn);
 	cycleQueue.add(new Cycle().addCommand(command1));
 	cycleQueue.add(new Cycle().addCommand(positionCommand));
 
