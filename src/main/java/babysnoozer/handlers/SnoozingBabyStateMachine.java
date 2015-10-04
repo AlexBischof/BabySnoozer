@@ -2,6 +2,8 @@ package babysnoozer.handlers;
 
 import babysnoozer.handlers.commands.CycleQueue;
 
+import java.util.concurrent.TimeUnit;
+
 public enum SnoozingBabyStateMachine {
 
     SnoozingBabyStateMachine;
@@ -24,7 +26,7 @@ public enum SnoozingBabyStateMachine {
         return releaseWaitTime;
     }
 
-    private long releaseWaitTime = 120000l;
+    private long releaseWaitTime = TimeUnit.SECONDS.toMillis(5l);
 
     public State getState() {
         return state;

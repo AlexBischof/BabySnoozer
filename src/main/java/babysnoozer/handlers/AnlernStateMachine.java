@@ -169,8 +169,9 @@ public class AnlernStateMachine {
     }
 
     private int fireCount(int count) {
-        int zaehlerwert = this.currPos + 10 * count;
-        zaehlerwert = Math.min(900, Math.max(-900, zaehlerwert));
+        //TODO refac to config
+        int zaehlerwert = this.currPos + 100 * count;
+        zaehlerwert = Math.min(10000, Math.max(-10000, zaehlerwert));
         EventBus.post(new DisplayTextEvent(String.valueOf(zaehlerwert)));
         return zaehlerwert;
     }

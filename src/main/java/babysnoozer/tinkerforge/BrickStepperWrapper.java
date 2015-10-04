@@ -10,6 +10,9 @@ import com.tinkerforge.TimeoutException;
 import java.io.IOException;
 import java.util.Properties;
 
+import static java.lang.Integer.valueOf;
+import static java.lang.Short.MAX_VALUE;
+
 public class BrickStepperWrapper {
 
     private static final String STEPPER_BRICK_UID = "6R5FYW";
@@ -82,32 +85,33 @@ public class BrickStepperWrapper {
     }
 
     public void setVelocity(Velocity velocity) throws TimeoutException, NotConnectedException {
-        this.brickStepper.setMaxVelocity(Integer.valueOf(
-                stepperConfigProperties.getProperty(velocity.getPropertyString(), velocity.getDefaultValue())));
+        this.brickStepper.setMaxVelocity(valueOf(
+            stepperConfigProperties.getProperty(velocity.getPropertyString(), velocity.getDefaultValue())));
     }
 
     public void setAcceleration(Acceleration acceleration) throws TimeoutException, NotConnectedException {
         // same acceleration as deacceleration
         this.brickStepper.setSpeedRamping(
-                Integer.valueOf(
-                        stepperConfigProperties.getProperty(
-                                acceleration.getPropertyString(), acceleration.getDefaultValue())),
-                Integer.valueOf(
-                        stepperConfigProperties.getProperty(acceleration.getPropertyString(), acceleration.getDefaultValue())));
+                valueOf(
+                    stepperConfigProperties.getProperty(
+                        acceleration.getPropertyString(), acceleration.getDefaultValue())),
+                valueOf(
+                    stepperConfigProperties
+                        .getProperty(acceleration.getPropertyString(), acceleration.getDefaultValue())));
     }
 
     public void configStepper() throws TimeoutException, NotConnectedException {
 
         //Sets nextCommand properties
-        brickStepper.setMinimumVoltage(Integer.valueOf(stepperConfigProperties.getProperty("outputVoltage", "7500")));
+        brickStepper.setMinimumVoltage(valueOf(stepperConfigProperties.getProperty("outputVoltage", "7500")));
         brickStepper.setMotorCurrent(800);
         brickStepper.setStepMode((short)8);
 
-        brickStepper.setMaxVelocity(Integer.valueOf(stepperConfigProperties.getProperty("speed_lvl3", "200")));
-        brickStepper.setSpeedRamping(Integer.valueOf(stepperConfigProperties.getProperty("acc_lvl3", "200")),
-                Integer.valueOf(stepperConfigProperties.getProperty("acc_lvl4", "200")));
+        brickStepper.setMaxVelocity(valueOf(stepperConfigProperties.getProperty("speed_lvl4", "200")));
+        brickStepper.setSpeedRamping(valueOf(stepperConfigProperties.getProperty("acc_lvl3", "200")),
+                valueOf(stepperConfigProperties.getProperty("acc_lvl4", "200")));
 
-        brickStepper.setDecay(Integer.valueOf(stepperConfigProperties.getProperty("decay", "10000")));
+        brickStepper.setDecay(valueOf(stepperConfigProperties.getProperty("decay", String.valueOf("65535"))));
 
         //Sets Stepper Listener
         StepperListener stepperListener = new StepperListener();
@@ -133,6 +137,10 @@ public class BrickStepperWrapper {
 
     public void enable() throws TimeoutException, NotConnectedException {
         brickStepper.enable();
+    }
+
+    public boolean isEnabled() throws TimeoutException, NotConnectedException {
+        return brickStepper.isEnabled();
     }
 
     public void disable() throws TimeoutException, NotConnectedException {
