@@ -1,6 +1,7 @@
 package babysnoozer.handlers;
 
 import babysnoozer.events.*;
+import babysnoozer.handlers.commands.LearnCycle;
 import babysnoozer.tinkerforge.BrickStepperWrapper;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -25,14 +26,27 @@ public class AnlernStateMachine {
     private static final int ANLERN_TRIGGER_TIME_IN_MS = 1000;
 
     public enum State {
-        Null, Init, StartPos, EndPos
+        Null, Init, StartPos, EndPos, DrawTime, ReleaseTime
     }
 
     private State state = State.Null;
 
+    private State setNextState()
+    {
+        return this.state.ordinal() < State.values().length - 1
+                ? State.values()[state.ordinal() + 1]
+                : null;
+    }
+
+    private LearnCycle startPosCycle = new LearnCycle(100, 10);
+    private LearnCycle endPosCycle = new LearnCycle(100, 10);
+    private LearnCycle drawTimeCycle = new LearnCycle(100, 100);
+    private LearnCycle releaseTimeCycle = new LearnCycle(1, 1);
+
     private int initStartPos;
     private int initEndPos;
     private long initReleaseWait;
+    private long initDrawWait;
 
     private int currPos = 0;
 
@@ -46,10 +60,21 @@ public class AnlernStateMachine {
 
         if (state.equals(State.Null)) {
             if (rotiPressEvent.getPressedLengthInMs() > ANLERN_TRIGGER_TIME_IN_MS) {
+                setNextState();
                 handleRotiPressEventForNullState();
             }
-        } else if (Arrays.asList(State.StartPos, State.EndPos).contains(state)) {
-            handleRotiPressEventForStartAndEndPos();
+        } else if (state.equals(State.StartPos)) {
+            setNextState();
+            handleRotiPressEventForStartPos();
+        } else if (state.equals(State.EndPos)) {
+            setNextState();
+            handleRotiPressEventForEndPos();
+        } else if (state.equals(State.DrawTime)) {
+            setNextState();
+            handleRotiPressEventForDrawWait();
+        } else if (state.equals(State.ReleaseTime)) {
+            setNextState();
+            handleRotiPressEventForReleaseWait();
         }
     }
 
@@ -65,12 +90,13 @@ public class AnlernStateMachine {
             this.initStartPos = learnEvent.optStartPos;
             this.initEndPos = learnEvent.optEndPos;
             this.initReleaseWait = learnEvent.optReleaseWait;
-        }
-        else {
+            this.initDrawWait = learnEvent.optDrawWait;
+        } else {
             // set initial values
-            this.initStartPos = 900;
-            this.initEndPos = 700;
-            this.initReleaseWait = 120000l;
+            this.initStartPos = 0;
+            this.initEndPos = 0;
+            this.initDrawWait = 1000l;  // ms
+            this.initReleaseWait = 120000l;  // s
         }
 
         if (state.equals(State.Null)) {
@@ -86,15 +112,18 @@ public class AnlernStateMachine {
             return;
         }
 
-        boolean acceptRotiCountEvent = Arrays.asList(State.StartPos, State.EndPos).contains(state);
+        boolean acceptRotiCountEvent = Arrays.asList(
+                State.StartPos,
+                State.EndPos,
+                State.DrawTime,
+                State.ReleaseTime).contains(state);
         if (acceptRotiCountEvent) {
 
             int count = rotiCountEvent.getCount();
             try {
                 // reset roti
                 TinkerforgeSystem.getRoti().getCount(/*reset*/ true);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -114,6 +143,52 @@ public class AnlernStateMachine {
                 EventBus.post(new DisplayTextEvent(String.valueOf(rotiCountEvent.getCount())));
             }
         }
+    }
+
+    private void handleRotiPressEventForNullState()
+            throws TimeoutException, NotConnectedException {
+        EventBus.post(new DisplayBrightnessEvent(DisplayBrightnessEvent.Brightness.FULL.getValue()));
+        EventBus.post(new DisplayTextEvent("Learn"));
+        setNextState();
+    }
+
+    private void handleRotiPressEventForStartPos() throws TimeoutException, NotConnectedException {
+        {
+            //Setzt learn velocity
+            BrickStepperWrapper stepper = TinkerforgeSystem.getStepper();
+            stepper.setVelocity(Velocity.learn);
+            stepper.setAcceleration(Acceleration.acc_learn, Acceleration.deacc_learn);
+
+            //Nach 2 Sekunden Anzeige
+            new Thread(() -> {
+                try {
+                    Thread.sleep(2000l);
+                    EventBus.post(new DisplayTextEvent("SetS"));
+
+                    //Statuswechsel
+                    AnlernStateMachine.this.state = AnlernStateMachine.State.StartPos;
+
+                    // reset roti
+                    TinkerforgeSystem.getRoti().getCount(/*reset*/ true);
+                    Thread.sleep(1000l);
+                    currPos = initStartPos;
+                    EventBus.post(new DisplayTextEvent(String.valueOf(initStartPos)));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            ).start();
+        }
+    }
+
+    private void handleRotiPressEventForEndPos() {
+    }
+
+    private void handleRotiPressEventForDrawWait() {
+    }
+
+    private void handleRotiPressEventForReleaseWait() {
     }
 
     private void handleRotiPressEventForStartAndEndPos()
@@ -137,40 +212,7 @@ public class AnlernStateMachine {
         }
     }
 
-    private void handleRotiPressEventForNullState()
-            throws TimeoutException, NotConnectedException {
-        //TODO BADBADBAD REFAC
-        this.state = State.Init;
 
-        EventBus.post(new DisplayBrightnessEvent(DisplayBrightnessEvent.Brightness.FULL.getValue()));
-        EventBus.post(new DisplayTextEvent("Learn"));
-
-        //Setzt learn velocity
-        BrickStepperWrapper stepper = TinkerforgeSystem.getStepper();
-        stepper.setVelocity(Velocity.learn);
-        stepper.setAcceleration(Acceleration.acc_learn, Acceleration.deacc_learn);
-
-        //Nach 2 Sekunden Anzeige
-        new Thread(() -> {
-            try {
-                Thread.sleep(2000l);
-                EventBus.post(new DisplayTextEvent("SetS"));
-
-                //Statuswechsel
-                AnlernStateMachine.this.state = AnlernStateMachine.State.StartPos;
-
-                // reset roti
-                TinkerforgeSystem.getRoti().getCount(/*reset*/ true);
-                Thread.sleep(1000l);
-                currPos = initStartPos;
-                EventBus.post(new DisplayTextEvent(String.valueOf(initStartPos)));
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        ).start();
-    }
 
     private boolean isDisabled() {
         return !Arrays.asList(SetCycleCount, Null).contains(SnoozingBabyStateMachine.getState());

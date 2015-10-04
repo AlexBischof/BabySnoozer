@@ -49,7 +49,8 @@ public class SnoozingBabyHandler {
 			EventBus.post(new LearnEvent(
 					SnoozingBabyStateMachine.getStartPos(),
 					SnoozingBabyStateMachine.getEndPos(),
-					SnoozingBabyStateMachine.getReleaseWaitTime()));
+					SnoozingBabyStateMachine.getReleaseWaitTime(),
+					SnoozingBabyStateMachine.getDrawWaitTime()));
 		}
 		else {
 			SnoozingBabyStateMachine.setState(State.Snooze);
