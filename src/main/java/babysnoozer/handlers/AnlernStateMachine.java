@@ -55,7 +55,10 @@ public class AnlernStateMachine {
             return;
         }
 
-        if (state.equals(State.EndPos)) {
+        if (state.equals(State.Null)) {
+            // do nothing, this is handled by learn event
+        }
+        else if (state.equals(State.EndPos)) {
             handleRotiPressEventForEndPos();
             setNextState();
         } else if (state.equals(State.DrawTime)) {
@@ -77,7 +80,6 @@ public class AnlernStateMachine {
 
             EventBus.post(new InitSnoozingStateEvent());
         }
-
         else
         {
             throw new RuntimeException("State " + state + " is not known in handleRotiPressEvent");
