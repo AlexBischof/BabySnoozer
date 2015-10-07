@@ -104,6 +104,9 @@ public class AnlernStateMachine {
             this.initReleaseWait = 120000l;  // s
         }
 
+        if (state.equals(State.Null))
+            setNextState();
+
         if (state.equals(State.Init)) {
             handleRotiPressEventForInitState();
             setNextState();
