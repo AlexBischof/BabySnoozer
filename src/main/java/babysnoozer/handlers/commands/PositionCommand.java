@@ -1,7 +1,5 @@
 package babysnoozer.handlers.commands;
 
-import babysnoozer.tinkerforge.BrickStepperWrapper;
-
 import static babysnoozer.tinkerforge.BrickStepperWrapper.*;
 
 /**
