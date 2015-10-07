@@ -1,7 +1,6 @@
 package babysnoozer.handlers;
 
 import babysnoozer.events.*;
-import babysnoozer.tinkerforge.BrickStepperWrapper;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.tinkerforge.NotConnectedException;
@@ -19,8 +18,6 @@ import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
 
 
 public class AnlernStateMachine {
-
-    private static final int ANLERN_TRIGGER_TIME_IN_MS = 2000;
 
     public enum State {
         Null, Init, StartPos, EndPos, DrawTime, ReleaseTime, Finished
@@ -40,8 +37,8 @@ public class AnlernStateMachine {
     private LearnCycle drawTimeCycle = new LearnCycle(100, 100, 0, 3000);
     private LearnCycle releaseTimeCycle = new LearnCycle(1, 1, 0, 180);
 
-    private long initStartPos;
-    private long initEndPos;
+    private int initStartPos;
+    private int initEndPos;
     private long initDrawWait;
     private long initReleaseWait;
 
@@ -67,8 +64,8 @@ public class AnlernStateMachine {
         }
         else if (state.equals(State.Finished)) {
             EventBus.post(new DisplayTextEvent("End"));
-            EventBus.post(new SetSnoozingStartPosEvent(startPosCycle.getLearnValue()));
-            EventBus.post(new SetSnoozingEndPosEvent(endPosCycle.getLearnValue()));
+            EventBus.post(new SetSnoozingStartPosEvent((int)startPosCycle.getLearnValue()));
+            EventBus.post(new SetSnoozingEndPosEvent((int)endPosCycle.getLearnValue()));
             EventBus.post(new SetSnoozingDrawWaitTimeEvent(drawTimeCycle.getLearnValue()));
             EventBus.post(new SetSnoozingReleaseWaitTimeEvent(releaseTimeCycle.getLearnValue()*1000));
             EventBus.post(new SetStepperPosEvent(

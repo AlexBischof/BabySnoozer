@@ -5,13 +5,13 @@ package babysnoozer.events;
  */
 public class LearnEvent {
 
-    public long optStartPos;
-    public long optEndPos;
+    public int optStartPos;
+    public int optEndPos;
     public long optReleaseWait;
     public long optDrawWait;
     public boolean hasInitValues = false;
 
-    public LearnEvent(long startPos, long endPos,  long releaseWait, long drawWait) {
+    public LearnEvent(int startPos, int endPos,  long releaseWait, long drawWait) {
         this.optStartPos = startPos;
         this.optEndPos = endPos;
         this.optReleaseWait = releaseWait;

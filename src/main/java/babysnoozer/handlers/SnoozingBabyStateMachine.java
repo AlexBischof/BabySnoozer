@@ -52,7 +52,7 @@ public enum SnoozingBabyStateMachine {
         this.cycleCount = cycleCount;
     }
 
-    public long getStartPos() {
+    public int getStartPos() {
         return getRopeDistance().getStartPos();
     }
 
@@ -71,15 +71,15 @@ public enum SnoozingBabyStateMachine {
         this.cycles = cycles;
     }
 
-    public void setStartPos(long startPos) {
+    public void setStartPos(int startPos) {
         getRopeDistance().setStartPos(startPos);
     }
 
-    public long getEndPos() {
+    public int getEndPos() {
         return getRopeDistance().getEndPos();
     }
 
-    public void setEndPos(long endPos) {
+    public void setEndPos(int endPos) {
         getRopeDistance().setEndPos(endPos);
     }
 
