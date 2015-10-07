@@ -21,7 +21,7 @@ public class CycleCreatorTest {
 
 	//Given
 	//when
-	List<Cycle> cycles = cycleCreator.create(new CycleCreationParam(2, 50l, 50l, 0, 100));
+	List<Cycle> cycles = cycleCreator.create(new CycleCreationParam(2, 50l, 50l, 0l, 100l));
 
 	//then
 	assertThat(cycles).hasSize(2);

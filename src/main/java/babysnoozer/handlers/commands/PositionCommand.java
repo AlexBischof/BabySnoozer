@@ -8,21 +8,21 @@ import static babysnoozer.tinkerforge.BrickStepperWrapper.*;
  * Created by Alexander Bischof on 10.03.15.
  */
 public class PositionCommand implements Command {
-  private final short position;
+  private final long position;
   private final Velocity velocity;
   private final Acceleration acceleration;
   private final Acceleration deacceleration;
 
-  public PositionCommand(int position, Velocity velocity,
+  public PositionCommand(long position, Velocity velocity,
                          Acceleration acceleration,
                          Acceleration deacceleration) {
-	this.position = (short) position;
+	this.position = position;
 	this.velocity = velocity;
 	this.acceleration = acceleration;
     this.deacceleration = deacceleration;
   }
 
-  public short getPosition() {
+  public long getPosition() {
 	return position;
   }
 

@@ -47,7 +47,7 @@ public class StepperHandler {
         /*
          * problem: if current position equal to desired position no positionreachedevent is fired...damn
          */
-        int pos = setStepperPosEvent.getPos();
+        int pos = (int)setStepperPosEvent.getPos();
         if (stepper.getCurrentPosition() == pos) {
             EventBus.post(new StepperDisableEvent());
             EventBus.post(new StepperPositionReachedEvent());

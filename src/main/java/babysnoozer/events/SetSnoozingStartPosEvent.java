@@ -1,13 +1,13 @@
 package babysnoozer.events;
 
 public class SetSnoozingStartPosEvent {
-    private final int startPos;
+    private final long startPos;
 
-    public SetSnoozingStartPosEvent(int startPos) {
+    public SetSnoozingStartPosEvent(long startPos) {
         this.startPos = startPos;
     }
 
-    public int getStartPos() {
+    public long getStartPos() {
         return startPos;
     }
 }

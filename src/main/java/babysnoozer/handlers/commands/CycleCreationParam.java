@@ -10,8 +10,8 @@ public class CycleCreationParam {
   private final int cycleCount;
   private final long releaseWait;
   private final long drawWait;
-  private final int startPos;
-  private final int endPos;
+  private final long startPos;
+  private final long endPos;
   private final Velocity drawVelocity;
   private final Acceleration drawAcceleration;
   private final Acceleration drawDeacceleration;
@@ -19,7 +19,7 @@ public class CycleCreationParam {
   private final Acceleration releaseAcceleration;
   private final Acceleration releaseDeacceleration;
 
-  public CycleCreationParam(int cycleCount, long drawWait, long releaseWait, int startPos, int endPos) {
+  public CycleCreationParam(int cycleCount, long drawWait, long releaseWait, long startPos, long endPos) {
 	this.cycleCount = cycleCount;
 	this.drawWait = drawWait;
 	this.releaseWait = releaseWait;
@@ -34,7 +34,7 @@ public class CycleCreationParam {
     this.releaseDeacceleration = Acceleration.deacc_release;
   }
 
-  public CycleCreationParam(int cycleCount, long drawWait, long releaseWait, int startPos, int endPos,
+  public CycleCreationParam(int cycleCount, long drawWait, long releaseWait, long startPos, long endPos,
                             Velocity drawVelocity, Acceleration drawAcceleration,
                             Acceleration drawDeacceleration,
                             Velocity releaseVelocity,
@@ -65,11 +65,11 @@ public class CycleCreationParam {
 	return drawWait;
   }
 
-  public int getStartPos() {
+  public long getStartPos() {
 	return startPos;
   }
 
-  public int getEndPos() {
+  public long getEndPos() {
 	return endPos;
   }
 

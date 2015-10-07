@@ -4,12 +4,12 @@ import static babysnoozer.tinkerforge.BrickStepperWrapper.Acceleration;
 import static babysnoozer.tinkerforge.BrickStepperWrapper.Velocity;
 
 public class SetStepperPosEvent {
-    private final int pos;
+    private final long pos;
     private final Velocity velocity;
     private final Acceleration deacceleration;
     private final Acceleration acceleration;
 
-    public SetStepperPosEvent(int pos, Velocity velocity, Acceleration acceleration,
+    public SetStepperPosEvent(long pos, Velocity velocity, Acceleration acceleration,
                               Acceleration deacceleration) {
         this.pos = pos;
         this.velocity = velocity;
@@ -17,7 +17,7 @@ public class SetStepperPosEvent {
         this.deacceleration = deacceleration;
     }
 
-    public int getPos() {
+    public long getPos() {
         return pos;
     }
 

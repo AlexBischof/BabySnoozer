@@ -37,6 +37,18 @@ public class SnoozingBabyHandler {
 	SnoozingBabyStateMachine.setEndPos(setSnoozingEndPosEvent.getEndPos());
   }
 
+	@Subscribe
+	@AllowConcurrentEvents
+	public void handleSetSnoozingDrawWaitTimeEvent(SetSnoozingDrawWaitTimeEvent setSnoozingDrawWaitTimeEvent) {
+		SnoozingBabyStateMachine.setDrawWaitTime(setSnoozingDrawWaitTimeEvent.getDrawWaitTime());
+	}
+
+	@Subscribe
+	@AllowConcurrentEvents
+	public void handleSetSnoozingReleaseWaitTimeEvent(SetSnoozingReleaseWaitTimeEvent setSnoozingReleaseWaitTimeEvent) {
+		SnoozingBabyStateMachine.setReleaseWaitTime(setSnoozingReleaseWaitTimeEvent.getReleaseWaitTime());
+	}
+
   @Subscribe
   @AllowConcurrentEvents
   public void handleRotiPressEvent(RotiPressEvent rotiPressEvent) {

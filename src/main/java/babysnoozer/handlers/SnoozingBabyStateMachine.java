@@ -17,8 +17,8 @@ public enum SnoozingBabyStateMachine {
     private RopeDistance ropeDistance;
     private int cycleCount = 1;
     private CycleQueue cycles;
-    private long releaseWaitTime = TimeUnit.SECONDS.toMillis(5l);
-    private long drawWaitTime = TimeUnit.MILLISECONDS.toMillis(500l);
+    private long releaseWaitTime;
+    private long drawWaitTime;
 
     public void setReleaseWaitTime(long releaseWaitTime) {
         this.releaseWaitTime = releaseWaitTime;
@@ -52,7 +52,7 @@ public enum SnoozingBabyStateMachine {
         this.cycleCount = cycleCount;
     }
 
-    public int getStartPos() {
+    public long getStartPos() {
         return getRopeDistance().getStartPos();
     }
 
@@ -71,15 +71,16 @@ public enum SnoozingBabyStateMachine {
         this.cycles = cycles;
     }
 
-    public void setStartPos(int startPos) {
+    public void setStartPos(long startPos) {
         getRopeDistance().setStartPos(startPos);
     }
 
-    public int getEndPos() {
+    public long getEndPos() {
         return getRopeDistance().getEndPos();
     }
 
-    public void setEndPos(int endPos) {
+    public void setEndPos(long endPos) {
         getRopeDistance().setEndPos(endPos);
     }
+
 }

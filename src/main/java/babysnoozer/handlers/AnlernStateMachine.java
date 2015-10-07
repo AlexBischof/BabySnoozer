@@ -22,28 +22,26 @@ public class AnlernStateMachine {
 
     private static final int ANLERN_TRIGGER_TIME_IN_MS = 2000;
 
-    private int rotiCountForSnoozing = 0;
-
     public enum State {
         Null, Init, StartPos, EndPos, DrawTime, ReleaseTime, Finished
     }
 
     private State state = State.Null;
 
-    private State setNextState()
+    private void setNextState()
     {
-        return this.state.ordinal() < State.values().length - 1
+        this.state = this.state.ordinal() < State.values().length - 1
                 ? State.values()[state.ordinal() + 1]
                 : null;
     }
 
-    private LearnCycle startPosCycle = new LearnCycle(100, 10, 100);
-    private LearnCycle endPosCycle = new LearnCycle(100, 10, 100);
-    private LearnCycle drawTimeCycle = new LearnCycle(100, 100);
-    private LearnCycle releaseTimeCycle = new LearnCycle(1, 1);
+    private LearnCycle startPosCycle = new LearnCycle(100, 10, 100, -10000, 10000);
+    private LearnCycle endPosCycle = new LearnCycle(100, 10, 100, -10000, 10000);
+    private LearnCycle drawTimeCycle = new LearnCycle(100, 100, 0, 3000);
+    private LearnCycle releaseTimeCycle = new LearnCycle(1, 1, 0, 180);
 
-    private int initStartPos;
-    private int initEndPos;
+    private long initStartPos;
+    private long initEndPos;
     private long initDrawWait;
     private long initReleaseWait;
 
@@ -55,22 +53,24 @@ public class AnlernStateMachine {
             return;
         }
 
+        setNextState();
+
         if (state.equals(State.Null)) {
             // do nothing, this is handled by learn event
         }
         else if (state.equals(State.EndPos)) {
             handleRotiPressEventForEndPos();
-            setNextState();
         } else if (state.equals(State.DrawTime)) {
             handleRotiPressEventForDrawWait();
-            setNextState();
         } else if (state.equals(State.ReleaseTime)) {
             handleRotiPressEventForReleaseWait();
-            setNextState();
         }
         else if (state.equals(State.Finished)) {
             EventBus.post(new DisplayTextEvent("End"));
-            EventBus.post(new SetSnoozingEndPosEvent(TinkerforgeSystem.getStepper().getCurrentPosition()));
+            EventBus.post(new SetSnoozingStartPosEvent(startPosCycle.getLearnValue()));
+            EventBus.post(new SetSnoozingEndPosEvent(endPosCycle.getLearnValue()));
+            EventBus.post(new SetSnoozingDrawWaitTimeEvent(drawTimeCycle.getLearnValue()));
+            EventBus.post(new SetSnoozingReleaseWaitTimeEvent(releaseTimeCycle.getLearnValue()*1000));
             EventBus.post(new SetStepperPosEvent(
                     SnoozingBabyStateMachine.getStartPos(),
                     Velocity.learn,
@@ -107,17 +107,15 @@ public class AnlernStateMachine {
             this.initReleaseWait = 120000l;  // s
         }
 
-        if (state.equals(State.Null)) {
-            setNextState();
+        if (state.equals(State.Init)) {
             handleRotiPressEventForInitState();
             setNextState();
             handleRotiPressEventForStartPos();
-            setNextState();
         }
     }
 
     @Subscribe
-    @AllowConcurrentEvents
+    // @AllowConcurrentEvents
     public void handleRotiCountEvent(RotiCountEvent rotiCountEvent) {
 
         if (isDisabled()) {
@@ -137,28 +135,23 @@ public class AnlernStateMachine {
             this.releaseTimeCycle.setRotiValue(rotiCountEvent.getCount());
         }
         else {
-            this.rotiCountForSnoozing = rotiCountForSnoozing + rotiCountEvent.getCount();
+            if (SnoozingBabyStateMachine.getState() == SetCycleCount) {
+                int currCycleCount = SnoozingBabyStateMachine.getCycleCount();
+                currCycleCount = currCycleCount + rotiCountEvent.getCount();
 
-            if (this.rotiCountForSnoozing < 0) {
+                if (currCycleCount < 0)
+                    currCycleCount = 0;
+                else if (currCycleCount > 10)
+                    currCycleCount = 10;
+
+                SnoozingBabyStateMachine.setCycleCount(currCycleCount);
+
                 try {
                     TinkerforgeSystem.getRoti().getCount(true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                this.rotiCountForSnoozing = 0;
-            }
-            else if (this.rotiCountForSnoozing > 10) {
-                this.rotiCountForSnoozing = 10;
-                try {
-                    TinkerforgeSystem.getRoti().getCount(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            else
-            {
-                SnoozingBabyStateMachine.setCycleCount(this.rotiCountForSnoozing);
-                EventBus.post(new DisplayTextEvent(String.valueOf(rotiCountEvent.getCount())));
+                EventBus.post(new DisplayTextEvent(String.valueOf(currCycleCount)));
             }
         }
     }
@@ -203,7 +196,7 @@ public class AnlernStateMachine {
         {
             new Thread(() -> {
                 try {
-                    EventBus.post(new DisplayTextEvent("SetD"));
+                    EventBus.post(new DisplayTextEvent("Draw"));
                     Thread.sleep(2000l);
                     drawTimeCycle.setInitLearnValue(initDrawWait);
                 } catch (Exception e) {
@@ -218,7 +211,7 @@ public class AnlernStateMachine {
         {
             new Thread(() -> {
                 try {
-                    EventBus.post(new DisplayTextEvent("SetD"));
+                    EventBus.post(new DisplayTextEvent("Rele"));
                     Thread.sleep(2000l);
                     releaseTimeCycle.setInitLearnValue(initReleaseWait);
                 } catch (Exception e) {
