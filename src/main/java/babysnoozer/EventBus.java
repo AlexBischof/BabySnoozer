@@ -1,11 +1,6 @@
 package babysnoozer;
 
 import babysnoozer.handlers.*;
-import com.google.common.eventbus.AsyncEventBus;
-
-import java.util.concurrent.Executors;
-
-import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
 
 /**
  * Created by Alexander Bischof on 10.01.15.

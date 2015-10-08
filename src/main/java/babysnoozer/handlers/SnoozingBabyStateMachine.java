@@ -2,8 +2,6 @@ package babysnoozer.handlers;
 
 import babysnoozer.handlers.commands.CycleQueue;
 
-import java.util.concurrent.TimeUnit;
-
 public enum SnoozingBabyStateMachine {
 
     SnoozingBabyStateMachine;

@@ -5,7 +5,6 @@ import babysnoozer.events.SetStepperPosEvent;
 import babysnoozer.tinkerforge.BrickStepperWrapper;
 
 import static babysnoozer.EventBus.EventBus;
-import static babysnoozer.handlers.SnoozingBabyStateMachine.SnoozingBabyStateMachine;
 import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
 
 public class LearnCycle {

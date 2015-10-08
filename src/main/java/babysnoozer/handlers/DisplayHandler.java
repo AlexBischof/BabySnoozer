@@ -6,7 +6,6 @@ import babysnoozer.events.DisplayTextEvent;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import com.tinkerforge.BrickletSegmentDisplay4x7;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 

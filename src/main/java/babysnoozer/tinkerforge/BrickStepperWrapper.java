@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import static java.lang.Integer.valueOf;
-import static java.lang.Short.MAX_VALUE;
 
 public class BrickStepperWrapper {
 
