@@ -1,7 +1,10 @@
 package babysnoozer;
 
 import babysnoozer.config.PropertiesLoader;
-import babysnoozer.events.*;
+import babysnoozer.events.DisplayTextEvent;
+import babysnoozer.events.InitSnoozingStateEvent;
+import babysnoozer.events.LearnEvent;
+import babysnoozer.events.ShutdownEvent;
 import com.tinkerforge.NotConnectedException;
 
 import java.io.Closeable;
@@ -23,12 +26,8 @@ public class Main implements Closeable {
             //InitBricks
             TinkerforgeSystem.initBricks();
 
-            Properties programProperties;
-            try {
-                programProperties = new PropertiesLoader("program.properties", false).load();
-                snooze_display_time = Long.valueOf(programProperties.getProperty("snooze_display_time", "2000"));
-            } catch (IOException ignored)
-            {}
+            Properties programProperties = new PropertiesLoader("program.properties", false).load();
+            snooze_display_time = Long.valueOf(programProperties.getProperty("snooze_display_time", "2000"));
 
             //Shows 3s Snoozing Baby
             EventBus.post(new DisplayTextEvent("Snoozing Baby"));
@@ -36,27 +35,32 @@ public class Main implements Closeable {
             // read the last position from stepper motor and write it to stepper API
             // that will be the starting point (TF inits with 0 commonly)
             int initialPositionRecall = 0;
-            try {
-                Properties loader = new PropertiesLoader("initialpositionrecall.properties", false).load();
-                initialPositionRecall = Integer.valueOf(loader.getProperty("lastPosition", "0"));
-            } catch (IOException ignored)
-            {}
+            PropertiesLoader propertiesLoader = new PropertiesLoader("initialpositionrecall.properties", false);
+            propertiesLoader.createIfNotExist();
+            Properties initialPositionRecallProperties = propertiesLoader.load();
+            initialPositionRecall = Integer
+                .valueOf(initialPositionRecallProperties.getProperty("lastPosition", "0"));
             TinkerforgeSystem.getStepper().setCurrentPosition(initialPositionRecall);
             Thread.sleep(snooze_display_time);
 
-            try {
-                Properties cycleConfigProperties = new PropertiesLoader("cycleconfig.properties", false).load();
-
-                SnoozingBabyStateMachine.setStartPos(Integer.valueOf(cycleConfigProperties.getProperty("startPos")));
-                SnoozingBabyStateMachine.setEndPos(Integer.valueOf(cycleConfigProperties.getProperty("endPos")));
-                SnoozingBabyStateMachine.setCycleCount(Integer.valueOf(cycleConfigProperties.getProperty("cycleCount")));
-                SnoozingBabyStateMachine.setDrawWaitTime(Long.valueOf(cycleConfigProperties.getProperty("wait_after_draw")));
-                SnoozingBabyStateMachine.setReleaseWaitTime(Long.valueOf(cycleConfigProperties.getProperty("wait_after_release")));
-
-                EventBus.post(new InitSnoozingStateEvent());
-            } catch (IOException e) {
+            PropertiesLoader cycleConfigPropertiesLoader = new PropertiesLoader("cycleconfig.properties", false);
+            if (cycleConfigPropertiesLoader.createIfNotExist()) {
                 System.out.println("cycleconfig.properties not found. Starting learning");
                 EventBus.post(new LearnEvent());
+            } else {
+                Properties cycleConfigProperties = cycleConfigPropertiesLoader.load();
+
+                SnoozingBabyStateMachine
+                    .setStartPos(Integer.valueOf(cycleConfigProperties.getProperty("startPos")));
+                SnoozingBabyStateMachine.setEndPos(Integer.valueOf(cycleConfigProperties.getProperty("endPos")));
+                SnoozingBabyStateMachine
+                    .setCycleCount(Integer.valueOf(cycleConfigProperties.getProperty("cycleCount")));
+                SnoozingBabyStateMachine
+                    .setDrawWaitTime(Long.valueOf(cycleConfigProperties.getProperty("wait_after_draw")));
+                SnoozingBabyStateMachine
+                    .setReleaseWaitTime(Long.valueOf(cycleConfigProperties.getProperty("wait_after_release")));
+
+                EventBus.post(new InitSnoozingStateEvent());
             }
 
             //Shows default cycle value

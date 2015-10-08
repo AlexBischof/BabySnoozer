@@ -8,30 +8,46 @@ import java.util.Properties;
  */
 public class PropertiesLoader {
 
-  private final String filename;
-  private final boolean internal;
+    private final String filename;
+    private final boolean useResoureceAsStream;
 
-  public PropertiesLoader(String filename, boolean internal) {
-	this.internal = internal;
-	this.filename = filename;
-  }
+    public PropertiesLoader(String filename, boolean useResoureceAsStream) {
+        this.useResoureceAsStream = useResoureceAsStream;
+        this.filename = filename;
 
-  public PropertiesLoader(String filename) {
-	this.filename = filename;
-    this.internal = true;
-  }
+    }
 
-  public Properties load() throws IOException {
-	Properties properties = new Properties();
-	InputStream in = internal ? PropertiesLoader.class.getResourceAsStream(filename) : new FileInputStream(filename);
-	properties.load(in);
-	in.close();
-	return properties;
-  }
+    public PropertiesLoader(String filename) {
+        this(filename, true);
+    }
 
-  public void store(Properties properties) throws IOException {
-	File f = new File(this.filename);
-	OutputStream out = new FileOutputStream(f);
-	properties.store(out, "Alter, whats up");
-  }
+    public boolean createIfNotExist() {
+        boolean created = false;
+        File file = new File(filename);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+                created = true;
+            } catch (IOException e) {
+                System.err.println("Could not create propertyfile" + filename + ", " + e.getMessage());
+            }
+        }
+        return created;
+    }
+
+    public Properties load() throws IOException {
+        Properties properties = new Properties();
+        try (InputStream in = useResoureceAsStream ?
+            PropertiesLoader.class.getResourceAsStream(filename) :
+            new FileInputStream(filename)) {
+            properties.load(in);
+        }
+        return properties;
+    }
+
+    public void store(Properties properties) throws IOException {
+        File f = new File(this.filename);
+        OutputStream out = new FileOutputStream(f);
+        properties.store(out, "Alter, whats up");
+    }
 }
