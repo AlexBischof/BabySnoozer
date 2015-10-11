@@ -104,6 +104,6 @@ public class LearnCycle {
     public void setInitLearnValue(long learnValue)
     {
         this.rotiValue = Math.round(learnValue / learnValueMultiplicator);
-        setRotiValue(this.rotiValue);
+        setRotiValue(0);
     }
 }
