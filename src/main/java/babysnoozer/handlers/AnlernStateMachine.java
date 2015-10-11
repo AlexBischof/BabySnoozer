@@ -35,7 +35,7 @@ public class AnlernStateMachine {
     private LearnCycle startPosCycle = new LearnCycle(100, 10, 100, -10000, 10000);
     private LearnCycle endPosCycle = new LearnCycle(100, 10, 100, -10000, 10000);
     private LearnCycle drawTimeCycle = new LearnCycle(100, 100, 0, 3000);
-    private LearnCycle releaseTimeCycle = new LearnCycle(1, 1, 0, 180);
+    private LearnCycle releaseTimeCycle = new LearnCycle(1000, 1, 0, 180000);
 
     private int initStartPos;
     private int initEndPos;
@@ -67,7 +67,7 @@ public class AnlernStateMachine {
             EventBus.post(new SetSnoozingStartPosEvent((int)startPosCycle.getLearnValue()));
             EventBus.post(new SetSnoozingEndPosEvent((int)endPosCycle.getLearnValue()));
             EventBus.post(new SetSnoozingDrawWaitTimeEvent(drawTimeCycle.getLearnValue()));
-            EventBus.post(new SetSnoozingReleaseWaitTimeEvent(releaseTimeCycle.getLearnValue()*1000));
+            EventBus.post(new SetSnoozingReleaseWaitTimeEvent(releaseTimeCycle.getLearnValue()));
             EventBus.post(new SetStepperPosEvent(
                     SnoozingBabyStateMachine.getStartPos(),
                     Velocity.learn,
