@@ -14,7 +14,6 @@ public class PropertiesLoader {
     public PropertiesLoader(String filename, boolean useResoureceAsStream) {
         this.useResoureceAsStream = useResoureceAsStream;
         this.filename = filename;
-
     }
 
     public PropertiesLoader(String filename) {
@@ -36,10 +35,11 @@ public class PropertiesLoader {
     }
 
     public Properties load() throws IOException {
+
         Properties properties = new Properties();
         try (InputStream in = useResoureceAsStream ?
-            PropertiesLoader.class.getResourceAsStream(filename) :
-            new FileInputStream(filename)) {
+                Thread.currentThread().getContextClassLoader().getResourceAsStream(filename) :
+                new FileInputStream(filename)) {
             properties.load(in);
         }
         return properties;
