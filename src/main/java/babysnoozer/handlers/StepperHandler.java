@@ -65,10 +65,9 @@ public class StepperHandler {
 
         new Thread(() -> {
             try {
-                // wait at least the draw wait time, so the motor holds the hold
+                // wait at least the draw wait time, so the motor holds the position
                 // and does not lose steps
-                long waitTime = Math.max(SnoozingBabyStateMachine.SnoozingBabyStateMachine.getDrawWaitTime(),
-                        2000l);
+                long waitTime = SnoozingBabyStateMachine.SnoozingBabyStateMachine.getDrawWaitTime();
                 Thread.sleep(waitTime);
                 if (stepper.getRemainingSteps() == 0)
                     stepper.disable();
