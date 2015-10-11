@@ -106,6 +106,10 @@ public class BrickStepperWrapper {
         brickStepper.addPositionReachedListener(stepperListener);
     }
 
+    public int getRemainingSteps() throws TimeoutException, NotConnectedException {
+        return brickStepper.getRemainingSteps();
+    }
+
     public int getCurrentPosition() throws TimeoutException, NotConnectedException {
         return brickStepper.getCurrentPosition();
     }

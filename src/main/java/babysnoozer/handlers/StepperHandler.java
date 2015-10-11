@@ -1,10 +1,7 @@
 package babysnoozer.handlers;
 
 import babysnoozer.config.PropertiesLoader;
-import babysnoozer.events.SetStepperPosEvent;
-import babysnoozer.events.StepperPositionReachedEvent;
-import babysnoozer.events.ShutdownEvent;
-import babysnoozer.events.StepperDisableEvent;
+import babysnoozer.events.*;
 import babysnoozer.tinkerforge.BrickStepperWrapper;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -44,11 +41,9 @@ public class StepperHandler {
 
         BrickStepperWrapper stepper = TinkerforgeSystem.getStepper();
 
-        /*
-         * problem: if current position equal to desired position no positionreachedevent is fired...damn
-         */
-        int pos = setStepperPosEvent.getPos();
-        if (stepper.getCurrentPosition() == pos) {
+        int targetPos = setStepperPosEvent.getPos();
+        if (stepper.getCurrentPosition() == targetPos) {
+            // check if position is reached
             EventBus.post(new StepperDisableEvent());
             EventBus.post(new StepperPositionReachedEvent());
         } else {
@@ -58,7 +53,7 @@ public class StepperHandler {
             if (!stepper.isEnabled()) {
                 stepper.enable();
             }
-            stepper.setPosition(pos);
+            stepper.setPosition(targetPos);
         }
     }
 
@@ -67,8 +62,20 @@ public class StepperHandler {
     public void handleStepperDisableEvent(StepperDisableEvent stepperDisableEvent)
             throws TimeoutException, NotConnectedException {
         BrickStepperWrapper stepper = TinkerforgeSystem.getStepper();
-        stepper.disable();
+
+        new Thread(() -> {
+            try {
+                // wait at least the draw wait time, so the motor holds the hold
+                // and does not lose steps
+                long waitTime = Math.max(SnoozingBabyStateMachine.SnoozingBabyStateMachine.getDrawWaitTime(),
+                        2000l);
+                Thread.sleep(waitTime);
+                if (stepper.getRemainingSteps() == 0)
+                    stepper.disable();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        ).start();
     }
-
-
 }
