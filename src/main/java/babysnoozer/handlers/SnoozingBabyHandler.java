@@ -75,6 +75,7 @@ public class SnoozingBabyHandler {
           Properties properties = propertiesLoader.load();
           properties.setProperty("startPos", String.valueOf(SnoozingBabyStateMachine.getStartPos()));
           properties.setProperty("endPos", String.valueOf(SnoozingBabyStateMachine.getEndPos()));
+          properties.setProperty("cycleCount", String.valueOf(SnoozingBabyStateMachine.getCycleCount()));
           properties.setProperty("wait_after_draw", String.valueOf(SnoozingBabyStateMachine.getDrawWaitTime()));
           properties.setProperty("wait_after_release", String.valueOf(SnoozingBabyStateMachine.getReleaseWaitTime()));
 
