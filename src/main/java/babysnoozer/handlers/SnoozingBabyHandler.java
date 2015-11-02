@@ -162,6 +162,17 @@ public class SnoozingBabyHandler {
     fireNextCommand();
   }
 
+  @Subscribe
+  @AllowConcurrentEvents
+  public void handleStepperDisableEvent(StepperDisableEvent stepperDisableEvent)
+          throws TimeoutException, NotConnectedException {
+    if (!SnoozingBabyStateMachine.getState().equals(State.Snooze))
+      // do only run that function is target state was already set by handleSnoozingStartEvent
+      return;
+
+    fireNextCommand();
+  }
+
   public CommandExecutor getCommandExecutor() {
     if (commandExecutor == null) {
       commandExecutor = new CommandExecutor();

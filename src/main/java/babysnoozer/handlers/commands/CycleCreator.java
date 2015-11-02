@@ -35,6 +35,9 @@ public class CycleCreator {
                             cycleCreationParam.getReleaseDeacceleration())
             );
 
+            //Disable motor
+            cycle.addCommand(new MotorDisableCommand());
+
             //Release-Wait
             cycle.addCommand(new WaitCommand(cycleCreationParam.getReleaseWait()));
         }

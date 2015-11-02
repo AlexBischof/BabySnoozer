@@ -2,6 +2,9 @@ package babysnoozer.handlers;
 
 import babysnoozer.config.PropertiesLoader;
 import babysnoozer.events.*;
+import babysnoozer.handlers.commands.CommandQueue;
+import babysnoozer.handlers.commands.CycleQueue;
+import babysnoozer.handlers.commands.WaitCommand;
 import babysnoozer.tinkerforge.BrickStepperWrapper;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -44,7 +47,7 @@ public class StepperHandler {
         int targetPos = setStepperPosEvent.getPos();
         if (stepper.getCurrentPosition() == targetPos) {
             // check if position is reached
-            EventBus.post(new StepperDisableEvent());
+            // EventBus.post(new StepperDisableEvent());
             EventBus.post(new StepperPositionReachedEvent());
         } else {
             stepper.setAcceleration(setStepperPosEvent.getAcceleration(),
@@ -65,12 +68,7 @@ public class StepperHandler {
 
         new Thread(() -> {
             try {
-                // wait at least the draw wait time, so the motor holds the position
-                // and does not lose steps
-                long waitTime = SnoozingBabyStateMachine.SnoozingBabyStateMachine.getDrawWaitTime();
-                Thread.sleep(waitTime);
-                if (stepper.getRemainingSteps() == 0)
-                    stepper.disable();
+                 stepper.disable();
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -1,6 +1,7 @@
 package babysnoozer.handlers.commands;
 
 import babysnoozer.EventBus;
+import babysnoozer.events.StepperDisableEvent;
 import babysnoozer.events.StepperPositionReachedEvent;
 import babysnoozer.events.SetStepperPosEvent;
 
@@ -19,7 +20,10 @@ public class CommandExecutor {
 	  } finally {
 		EventBus.EventBus.post(new StepperPositionReachedEvent());
 	  }
-	} else if (command instanceof PositionCommand) {
+	} else if (command instanceof MotorDisableCommand) {
+		EventBus.EventBus.post(new StepperDisableEvent());
+	}
+	else if (command instanceof PositionCommand) {
 	  PositionCommand positionCommand = (PositionCommand) command;
 	  EventBus.EventBus.post(new SetStepperPosEvent(
 			  positionCommand.getPosition(),

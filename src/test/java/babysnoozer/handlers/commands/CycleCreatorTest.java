@@ -27,7 +27,7 @@ public class CycleCreatorTest {
 	assertThat(cycles).hasSize(2);
 
     Cycle cycle = cycles.get(0);
-    assertThat(cycle.commandQueue).hasSize(4);
+    assertThat(cycle.commandQueue).hasSize(5);
 
   }
 }

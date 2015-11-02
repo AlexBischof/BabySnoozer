@@ -15,7 +15,6 @@ public class StepperListener implements BrickStepper.UnderVoltageListener, Brick
   }
 
   @Override public void positionReached(int position) {
-    EventBus.post(new StepperDisableEvent());
 	EventBus.post(new StepperPositionReachedEvent());
   }
 }
