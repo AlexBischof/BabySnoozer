@@ -1,7 +1,6 @@
 package babysnoozer.handlers;
 
 import babysnoozer.events.LogEvent;
-import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
 /**
@@ -9,9 +8,8 @@ import com.google.common.eventbus.Subscribe;
  */
 public class LogHandler {
 
-  @Subscribe
-  @AllowConcurrentEvents
-  public void handle(LogEvent logEvent) {
-	System.out.println(logEvent.getText());
-  }
+    @Subscribe
+    public void handle(LogEvent logEvent) {
+        System.out.println(logEvent.getText());
+    }
 }

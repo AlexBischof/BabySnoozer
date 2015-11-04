@@ -1,15 +1,15 @@
 package babysnoozer.handlers;
 
 import babysnoozer.config.PropertiesLoader;
-import babysnoozer.events.*;
-import babysnoozer.handlers.commands.CommandQueue;
-import babysnoozer.handlers.commands.CycleQueue;
-import babysnoozer.handlers.commands.WaitCommand;
+import babysnoozer.events.SetStepperPosEvent;
+import babysnoozer.events.ShutdownEvent;
+import babysnoozer.events.StepperDisableEvent;
+import babysnoozer.events.StepperPositionReachedEvent;
 import babysnoozer.tinkerforge.BrickStepperWrapper;
-import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
+
 import java.io.IOException;
 import java.util.Properties;
 
@@ -38,7 +38,6 @@ public class StepperHandler {
     }
 
     @Subscribe
-    @AllowConcurrentEvents
     public void handleSetStepperPosEvent(SetStepperPosEvent setStepperPosEvent)
             throws TimeoutException, NotConnectedException {
 
@@ -61,14 +60,14 @@ public class StepperHandler {
     }
 
     @Subscribe
-    @AllowConcurrentEvents
     public void handleStepperDisableEvent(StepperDisableEvent stepperDisableEvent)
             throws TimeoutException, NotConnectedException {
         BrickStepperWrapper stepper = TinkerforgeSystem.getStepper();
 
         new Thread(() -> {
             try {
-                 stepper.disable();
+                System.out.println("StepperHandler: Disabling motor");
+                stepper.disable();
             } catch (Exception e) {
                 e.printStackTrace();
             }

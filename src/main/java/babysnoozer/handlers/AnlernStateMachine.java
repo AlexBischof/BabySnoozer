@@ -1,7 +1,6 @@
 package babysnoozer.handlers;
 
 import babysnoozer.events.*;
-import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
@@ -25,8 +24,7 @@ public class AnlernStateMachine {
 
     private State state = State.Null;
 
-    private void setNextState()
-    {
+    private void setNextState() {
         this.state = this.state.ordinal() < State.values().length - 1
                 ? State.values()[state.ordinal() + 1]
                 : null;
@@ -43,7 +41,6 @@ public class AnlernStateMachine {
     private long initReleaseWait;
 
     @Subscribe
-    @AllowConcurrentEvents
     public void handleRotiPressEvent(RotiPressEvent rotiPressEvent) throws TimeoutException, NotConnectedException {
 
         if (isDisabled()) {
@@ -54,18 +51,16 @@ public class AnlernStateMachine {
 
         if (state.equals(State.Null)) {
             // do nothing, this is handled by learn event
-        }
-        else if (state.equals(State.EndPos)) {
+        } else if (state.equals(State.EndPos)) {
             handleRotiPressEventForEndPos();
         } else if (state.equals(State.DrawTime)) {
             handleRotiPressEventForDrawWait();
         } else if (state.equals(State.ReleaseTime)) {
             handleRotiPressEventForReleaseWait();
-        }
-        else if (state.equals(State.Finished)) {
+        } else if (state.equals(State.Finished)) {
             EventBus.post(new DisplayTextEvent("End"));
-            EventBus.post(new SetSnoozingStartPosEvent((int)startPosCycle.getLearnValue()));
-            EventBus.post(new SetSnoozingEndPosEvent((int)endPosCycle.getLearnValue()));
+            EventBus.post(new SetSnoozingStartPosEvent((int) startPosCycle.getLearnValue()));
+            EventBus.post(new SetSnoozingEndPosEvent((int) endPosCycle.getLearnValue()));
             EventBus.post(new SetSnoozingDrawWaitTimeEvent(drawTimeCycle.getLearnValue()));
             EventBus.post(new SetSnoozingReleaseWaitTimeEvent(releaseTimeCycle.getLearnValue()));
             EventBus.post(new SetStepperPosEvent(
@@ -76,15 +71,12 @@ public class AnlernStateMachine {
             this.state = State.Null;
 
             EventBus.post(new InitSnoozingStateEvent());
-        }
-        else
-        {
+        } else {
             throw new RuntimeException("State " + state + " is not known in handleRotiPressEvent");
         }
     }
 
     @Subscribe
-    @AllowConcurrentEvents
     public void handleLearnEvent(LearnEvent learnEvent) throws TimeoutException, NotConnectedException {
 
         if (isDisabled()) {
@@ -115,7 +107,6 @@ public class AnlernStateMachine {
     }
 
     @Subscribe
-    // @AllowConcurrentEvents
     public void handleRotiCountEvent(RotiCountEvent rotiCountEvent) {
 
         if (isDisabled()) {
@@ -124,17 +115,13 @@ public class AnlernStateMachine {
 
         if (this.state == State.StartPos) {
             this.startPosCycle.setRotiValue(rotiCountEvent.getCount());
-        }
-        else if (this.state == State.EndPos) {
+        } else if (this.state == State.EndPos) {
             this.endPosCycle.setRotiValue(rotiCountEvent.getCount());
-        }
-        else if (this.state == State.DrawTime) {
+        } else if (this.state == State.DrawTime) {
             this.drawTimeCycle.setRotiValue(rotiCountEvent.getCount());
-        }
-        else if (this.state == State.ReleaseTime) {
+        } else if (this.state == State.ReleaseTime) {
             this.releaseTimeCycle.setRotiValue(rotiCountEvent.getCount());
-        }
-        else {
+        } else {
             if (SnoozingBabyStateMachine.getState() == SetCycleCount) {
                 int currCycleCount = SnoozingBabyStateMachine.getCycleCount();
                 currCycleCount = currCycleCount + rotiCountEvent.getCount();
