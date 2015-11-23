@@ -100,7 +100,7 @@ public class SnoozingBabyHandler {
 
     @Subscribe
     public void handleSnoozingStartEvent(SnoozingStartEvent snoozingStartEvent) {
-        EventBus.post(new DisplayBrightnessEvent(DisplayBrightnessEvent.Brightness.FULL.getValue()));
+        EventBus.post(new DisplayBrightnessEvent(DisplayBrightnessEvent.Brightness.LOW.getValue()));
 
     /*
      * Creates CommandQueue

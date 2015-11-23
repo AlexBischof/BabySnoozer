@@ -17,7 +17,7 @@ import static babysnoozer.tinkerforge.TinkerforgeSystem.TinkerforgeSystem;
 public class DisplayHandler {
 
     private String lastDisplayText = "";
-    private short lastBrightness = DisplayBrightnessEvent.Brightness.FULL.getValue();
+    private short lastBrightness = DisplayBrightnessEvent.Brightness.LOW.getValue();
 
     @Subscribe
     public void handleDisplayEvent(DisplayBrightnessEvent displayBrightnessEvent)
