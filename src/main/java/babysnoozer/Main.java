@@ -1,10 +1,7 @@
 package babysnoozer;
 
 import babysnoozer.config.PropertiesLoader;
-import babysnoozer.events.DisplayTextEvent;
-import babysnoozer.events.InitSnoozingStateEvent;
-import babysnoozer.events.LearnEvent;
-import babysnoozer.events.ShutdownEvent;
+import babysnoozer.events.*;
 import com.tinkerforge.NotConnectedException;
 
 import java.io.Closeable;
@@ -28,6 +25,9 @@ public class Main implements Closeable {
             programProperties = new PropertiesLoader("program.properties").load();
             long snooze_display_time = Long.valueOf(programProperties.getProperty("snooze_display_time", "2000"));
 
+            EventBus.post(new DisplayBrightnessEvent((short)0));
+            TinkerforgeSystem.getStepper().disableStatusLED();
+            
             //Shows 3s Snoozing Baby
             EventBus.post(new DisplayTextEvent("Snoozing Baby"));
 

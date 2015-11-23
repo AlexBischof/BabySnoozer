@@ -76,6 +76,14 @@ public class BrickStepperWrapper {
         }
     }
 
+    public void disableStatusLED() {
+        try {
+            this.brickStepper.disableStatusLED();
+        } catch (TimeoutException | NotConnectedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void initBrick(IPConnection ipconnection) {
         this.brickStepper = new BrickStepper(STEPPER_BRICK_UID, ipconnection);
     }
