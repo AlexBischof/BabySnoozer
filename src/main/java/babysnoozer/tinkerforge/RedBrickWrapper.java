@@ -11,6 +11,7 @@ public class RedBrickWrapper {
     }
 
     public void disableStatusLED() {
+
 //        try {
 //            this.brickRED.
 //        } catch (TimeoutException | NotConnectedException e) {

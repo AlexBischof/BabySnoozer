@@ -27,6 +27,7 @@ public class Main implements Closeable {
 
             EventBus.post(new DisplayBrightnessEvent((short)0));
             TinkerforgeSystem.getStepper().disableStatusLED();
+            TinkerforgeSystem.getRedBrick().disableStatusLED();
             
             //Shows 3s Snoozing Baby
             EventBus.post(new DisplayTextEvent("Snoozing Baby"));

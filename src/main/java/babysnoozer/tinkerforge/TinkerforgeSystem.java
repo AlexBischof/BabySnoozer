@@ -16,6 +16,7 @@ public enum TinkerforgeSystem {
 
     private IPConnection ipconnection;
     private BrickStepperWrapper stepperWrapper;
+    private RedBrickWrapper redBrickWrapper;
     private BrickletSegmentDisplay4x7 display4x7;
     private BrickletRotaryEncoder roti;
 
@@ -28,6 +29,9 @@ public enum TinkerforgeSystem {
 
         stepperWrapper = new BrickStepperWrapper();
         stepperWrapper.initBrick(ipconnection);
+
+        redBrickWrapper = new RedBrickWrapper();
+        redBrickWrapper.initBrick(ipconnection);
 
         display4x7 = new BrickletSegmentDisplay4x7("pPJ", ipconnection);
 
@@ -56,6 +60,10 @@ public enum TinkerforgeSystem {
 
     public BrickStepperWrapper getStepper() {
         return stepperWrapper;
+    }
+
+    public RedBrickWrapper getRedBrick() {
+        return redBrickWrapper;
     }
 
     public BrickletSegmentDisplay4x7 getDisplay4x7() {
